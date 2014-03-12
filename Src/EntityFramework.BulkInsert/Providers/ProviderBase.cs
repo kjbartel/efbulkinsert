@@ -14,30 +14,51 @@ namespace EntityFramework.BulkInsert.Providers
         protected DbContext Context;
         protected abstract string ConnectionString { get; }
 
-
-        public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction, SqlBulkCopyOptions options, int batchSize)
-        {
-            Run(entities, (TTransaction) transaction, options, batchSize);
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public IEfBulkInsertProvider SetContext(DbContext context)
         {
             Context = context;
-
-            //var cs = ConfigurationManager.ConnectionStrings[context.GetType().Name];
-            //ConnectionString = cs.ConnectionString;
-
             return this;
         }
 
-        //public abstract void Run<T>(IEnumerable<T> entities, BulkInsertOptions options);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IDbConnection GetConnection()
         {
             return CreateConnection();
         }
 
-        public void Run<T>(IEnumerable<T> entities, SqlBulkCopyOptions options, int batchSize)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        protected abstract TConnection CreateConnection();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entities"></param>
+        /// <param name="transaction"></param>
+        /// <param name="options"></param>
+        public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction, BulkInsertOptions options)
+        {
+            Run(entities, (TTransaction)transaction, options);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entities"></param>
+        /// <param name="options"></param>
+        public void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
         {
             using (var dbConnection = GetConnection())
             {
@@ -47,7 +68,7 @@ namespace EntityFramework.BulkInsert.Providers
                 {
                     try
                     {
-                        Run(entities, transaction, options, batchSize);
+                        Run(entities, transaction, options);
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -62,8 +83,13 @@ namespace EntityFramework.BulkInsert.Providers
             }
         }
 
-        //public abstract string ProviderName { get; }
-        public abstract void Run<T>(IEnumerable<T> entities, TTransaction transaction, SqlBulkCopyOptions options, int batchSize);
-        protected abstract TConnection CreateConnection();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entities"></param>
+        /// <param name="transaction"></param>
+        /// <param name="options"></param>
+        public abstract void Run<T>(IEnumerable<T> entities, TTransaction transaction, BulkInsertOptions options);
     }
 }

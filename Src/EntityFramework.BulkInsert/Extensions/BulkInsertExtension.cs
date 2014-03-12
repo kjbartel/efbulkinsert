@@ -1,14 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace EntityFramework.BulkInsert.Extensions
 {
     public static class BulkInsertExtension
     {
-        internal const int DefaultBatchSize = 5000;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="entities"></param>
+        /// <param name="options"></param>
+        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, BulkInsertOptions options)
+        {
+            var bulkInsert = ProviderFactory.Get(context);
+            bulkInsert.Run(entities, options);
+        }
 
         /// <summary>
         /// 
@@ -17,10 +28,42 @@ namespace EntityFramework.BulkInsert.Extensions
         /// <param name="context"></param>
         /// <param name="entities"></param>
         /// <param name="batchSize"></param>
-        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, int batchSize = DefaultBatchSize)
+        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, int? batchSize = null)
+        {
+            context.BulkInsert(entities, SqlBulkCopyOptions.Default, batchSize);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="entities"></param>
+        /// <param name="batchSize"></param>
+        /// <returns></returns>
+        public static Task BulkInsertAsync<T>(this DbContext context, IEnumerable<T> entities, int? batchSize = null)
+        {
+            return Task.Factory.StartNew(() => context.BulkInsert(entities, SqlBulkCopyOptions.Default, batchSize));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="entities"></param>
+        /// <param name="sqlBulkCopyOptions"></param>
+        /// <param name="batchSize"></param>
+        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, SqlBulkCopyOptions sqlBulkCopyOptions, int? batchSize = null)
         {
             var bulkInsert = ProviderFactory.Get(context);
-            bulkInsert.Run(entities, SqlBulkCopyOptions.Default, DefaultBatchSize);
+            var options = new BulkInsertOptions {SqlBulkCopyOptions = sqlBulkCopyOptions};
+            if (batchSize.HasValue)
+            {
+                options.BatchSize = batchSize.Value;
+            }
+
+            bulkInsert.Run(entities, options);
         }
 
         /// <summary>
@@ -31,10 +74,30 @@ namespace EntityFramework.BulkInsert.Extensions
         /// <param name="entities"></param>
         /// <param name="options"></param>
         /// <param name="batchSize"></param>
-        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, SqlBulkCopyOptions options, int batchSize = DefaultBatchSize)
+        public static Task BulkInsertAsync<T>(this DbContext context, IEnumerable<T> entities, SqlBulkCopyOptions options, int? batchSize = null)
+        {
+            return Task.Factory.StartNew(() => context.BulkInsert(entities, options, batchSize));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="entities"></param>
+        /// <param name="transaction"></param>
+        /// <param name="sqlBulkCopyOptions"></param>
+        /// <param name="batchSize"></param>
+        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, IDbTransaction transaction, SqlBulkCopyOptions sqlBulkCopyOptions = SqlBulkCopyOptions.Default, int? batchSize = null)
         {
             var bulkInsert = ProviderFactory.Get(context);
-            bulkInsert.Run(entities, options, DefaultBatchSize);
+            var options = new BulkInsertOptions {SqlBulkCopyOptions = sqlBulkCopyOptions};
+            if (batchSize.HasValue)
+            {
+                options.BatchSize = batchSize.Value;
+            }
+
+            bulkInsert.Run(entities, transaction, options);
         }
 
         /// <summary>
@@ -46,10 +109,9 @@ namespace EntityFramework.BulkInsert.Extensions
         /// <param name="transaction"></param>
         /// <param name="options"></param>
         /// <param name="batchSize"></param>
-        public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, IDbTransaction transaction, SqlBulkCopyOptions options = SqlBulkCopyOptions.Default, int batchSize = DefaultBatchSize)
+        public static Task BulkInsertAsync<T>(this DbContext context, IEnumerable<T> entities, IDbTransaction transaction, SqlBulkCopyOptions options = SqlBulkCopyOptions.Default, int? batchSize = null)
         {
-            var bulkInsert = ProviderFactory.Get(context);
-            bulkInsert.Run(entities, transaction, options, DefaultBatchSize);
+            return Task.Factory.StartNew(() => context.BulkInsert(entities, transaction, options, batchSize));
         }
 
         /*
@@ -62,23 +124,34 @@ namespace EntityFramework.BulkInsert.Extensions
          * */
     }
 
-    internal class BulkInsertOptions
+    public static class BulkInsertDefaults
     {
-        public int BatchSizeValue { get; private set; }
-        public SqlBulkCopyOptions SqlBulkCopyOptionsValue { get; private set; }
-        public int TimeOutValue { get; private set; }
-        public SqlRowsCopiedEventHandler CallbackMethod { get; private set; }
-        public int NotifyAfterValue { get; private set; }
+        public static int BatchSize = 5000;
+        public static SqlBulkCopyOptions SqlBulkCopyOptions = SqlBulkCopyOptions.Default;
+        public static int TimeOut = 30;
+        public static int NotifyAfter = 1000;
+    }
+
+    public class BulkInsertOptions
+    {
+        public int BatchSize { get; set; }
+        public SqlBulkCopyOptions SqlBulkCopyOptions { get; set; }
+        public int TimeOut { get; set; }
+        public SqlRowsCopiedEventHandler Callback { get; set; }
+        public int NotifyAfter { get; set; }
 
 #if !NET40
-        public bool EnableStreamingValue { get; private set; }
+        public bool EnableStreaming { get; set; }
 #endif
 
-        internal BulkInsertOptions()
+        public BulkInsertOptions()
         {
-            BatchSizeValue = BulkInsertExtension.DefaultBatchSize;
-            TimeOutValue = 30;
+            BatchSize = BulkInsertDefaults.BatchSize;
+            SqlBulkCopyOptions = BulkInsertDefaults.SqlBulkCopyOptions;
+            TimeOut = BulkInsertDefaults.TimeOut;
+            NotifyAfter = BulkInsertDefaults.NotifyAfter;
         }
+        /*
 
         /// <summary>
         /// Sets batch size
@@ -139,6 +212,6 @@ namespace EntityFramework.BulkInsert.Extensions
             return this;
         }
 #endif
-
+        */
     }
 }

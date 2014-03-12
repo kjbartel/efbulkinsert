@@ -31,6 +31,17 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         protected abstract string ProviderConnectionType { get; }
 
         [Test]
+        public void BulkInsertWithStreaming()
+        {
+            using (var ctx = GetContext())
+            {
+                var foos = new[] { new ContractStock { Margin = 0.1m } };
+                var options = new BulkInsertOptions { EnableStreaming = true };
+                ctx.BulkInsert(foos, options);
+            }
+        }
+
+        [Test]
         public void BulkInsertToTableInNonDefaultSchema()
         {
             using (var ctx = GetContext())

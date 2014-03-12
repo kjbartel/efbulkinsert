@@ -54,7 +54,7 @@ namespace EntityFramework.BulkInsert.Providers
         }
         */
 
-        public override void Run<T>(IEnumerable<T> entities, SqlTransaction transaction, SqlBulkCopyOptions options, int batchSize)
+        public override void Run<T>(IEnumerable<T> entities, SqlTransaction transaction, BulkInsertOptions options)
         {
             var baseType = typeof (T);
             var allTypes = baseType.GetDerivedTypes(true);
@@ -63,12 +63,12 @@ namespace EntityFramework.BulkInsert.Providers
 
             using (var dataTable = DataTableHelper.Create(neededMappings, entities))
             {
-                using (var sqlBulkCopy = new SqlBulkCopy(transaction.Connection, options, transaction))
+                using (var sqlBulkCopy = new SqlBulkCopy(transaction.Connection, options.SqlBulkCopyOptions, transaction))
                 {
-                    sqlBulkCopy.BatchSize = batchSize;
+                    sqlBulkCopy.BatchSize = options.BatchSize;
                     sqlBulkCopy.DestinationTableName = dataTable.TableName;
 #if !NET40
-                    //sqlBulkCopy.EnableStreaming = true;
+                    sqlBulkCopy.EnableStreaming = options.EnableStreaming;
 #endif
 
                     foreach (DataColumn col in dataTable.Columns)

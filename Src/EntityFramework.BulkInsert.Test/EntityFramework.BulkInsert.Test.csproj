@@ -49,14 +49,9 @@
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.3\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.5\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
-      </ItemGroup>
-      <ItemGroup>
-        <None Include="..\packages\package.configs\ef5\packages.config">
-          <Link>packages.config</Link>
-        </None>
       </ItemGroup>
     </When>
     <When Condition=" '$(Configuration)'=='NET45_EF5' ">
@@ -156,7 +151,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
