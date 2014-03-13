@@ -12,7 +12,14 @@ namespace EntityFramework.BulkInsert.Providers
         where TTransaction : IDbTransaction
     {
         protected DbContext Context;
-        protected abstract string ConnectionString { get; }
+
+        protected virtual string ConnectionString
+        {
+            get
+            {
+                return (string)Context.Database.Connection.GetPrivateFieldValue("_connectionString");
+            }
+        }
 
         /// <summary>
         /// 

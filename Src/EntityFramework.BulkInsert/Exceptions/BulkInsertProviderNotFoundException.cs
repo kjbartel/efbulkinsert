@@ -16,7 +16,7 @@ namespace EntityFramework.BulkInsert.Exceptions
             {
                 return
                     string.Format(
-                        "BulkInsertProvider not found for '{0}.\nTo register new provider user EntityFramework.BulkInsert.Providers.ProviderFactory.Register() method'",
+                        "BulkInsertProvider not found for '{0}.\nTo register new provider use EntityFramework.BulkInsert.ProviderFactory.Register() method'",
                         _connectionType);
             }
         }

@@ -11,14 +11,6 @@ namespace EntityFramework.BulkInsert.Providers
 {
     public class EfSqlBulkInsertProviderWithDataTable : ProviderBase<SqlConnection, SqlTransaction>
     {
-        protected override string ConnectionString
-        {
-            get
-            {
-                return (string) Context.Database.Connection.GetPrivateFieldValue("_connectionString");
-            }
-        }
-
         /*
         public override void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
         {
