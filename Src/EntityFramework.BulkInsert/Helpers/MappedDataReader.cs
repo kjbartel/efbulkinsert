@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.MappingAPI;
+using EntityFramework.MappingAPI.Extensions;
 
 namespace EntityFramework.BulkInsert.Helpers
 {
@@ -12,13 +15,16 @@ namespace EntityFramework.BulkInsert.Helpers
         private readonly IEnumerator<T> _enumerator;
 
         public Dictionary<Type, Dictionary<int, Func<T, object>>> Selectors { get; private set; }
-        //public Dictionary<int, Expression> Expressions { get; private set; }
 
+        /// <summary>
+        /// Property maps by ordinal position
+        /// </summary>
         public Dictionary<int, IPropertyMap> Cols { get; private set; } 
-        public Dictionary<string, int> Indexes { get; private set; }
-        public Dictionary<string, string> Mappings { get; private set; }
 
-        //public Dictionary<int, IColumnMapping> Cols { get; private set; }
+        /// <summary>
+        /// Ordinal positions of columns
+        /// </summary>
+        public Dictionary<string, int> Indexes { get; private set; }
 
         public int FieldCount { get; private set; }
 
@@ -26,10 +32,17 @@ namespace EntityFramework.BulkInsert.Helpers
 
         public string SchemaName { get; private set; }
 
-        //private readonly IDbMapping _dbMapping;
-        
-        public MappedDataReader(IEnumerable<T> enumerable, Dictionary<Type, IEntityMap> tableMappings, bool insertIdentity = false)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="enumerable"></param>
+        /// <param name="context"></param>
+        public MappedDataReader(IEnumerable<T> enumerable, DbContext context)
         {
+            var baseType = typeof(T);
+            var allTypes = baseType.GetDerivedTypes(true);
+            var tableMappings = allTypes.ToDictionary(x => x, context.Db);
+
             if (tableMappings == null || tableMappings.Count == 0)
             {
                 throw new Exception("No table mappings provided.");
@@ -42,18 +55,14 @@ namespace EntityFramework.BulkInsert.Helpers
                 throw new Exception("All mappings must have same table name.");
             }
 
-            //_dbMapping = baseMapping.DbMapping;
             TableName = firstTableName;
             SchemaName = baseMapping.Schema;
 
             Indexes     = new Dictionary<string, int>();
-            Mappings    = new Dictionary<string, string>();
             Cols        = new Dictionary<int, IPropertyMap>();
             Selectors   = new Dictionary<Type, Dictionary<int, Func<T, object>>>();
 
             _enumerator = enumerable.GetEnumerator();
-
-            //Expressions = new Dictionary<int, Expression>();
 
             int i = 0;
             foreach (var kvp in tableMappings)
@@ -80,12 +89,7 @@ namespace EntityFramework.BulkInsert.Helpers
                         Indexes[col.ColumnName] = currentIndex;
                         ++i;
                     }
-
-                    if (!col.IsIdentity || insertIdentity)
-                    {
-                        Mappings[col.ColumnName] = col.ColumnName;
-                    }
-
+                     
                     if (col.IsDiscriminator)
                     {
                         var x = Expression.Parameter(typeof(T), "x");
@@ -118,9 +122,16 @@ namespace EntityFramework.BulkInsert.Helpers
             _enumerator.Dispose();
         }
 
+        private Dictionary<int, Func<T, object>> _selectors; 
         public bool Read()
         {
-            return _enumerator.MoveNext();
+            var read = _enumerator.MoveNext();
+            if (read)
+            {
+                var t = _enumerator.Current.GetType();
+                _selectors = Selectors[t];
+            }
+            return read;
         }
 
         public object GetValue(int i)
@@ -130,18 +141,18 @@ namespace EntityFramework.BulkInsert.Helpers
                 return null;
             }
 
-
             try
             {
-                var type = _enumerator.Current.GetType();
-
-                // current index is not present in given object type. i.e this column is for some sibling
-                if (!Selectors[type].ContainsKey(i))
+                object value;
+                try
                 {
+                    value = _selectors[i](_enumerator.Current);
+                }
+                catch (KeyNotFoundException)
+                {
+                    // current index is not present in given object type. i.e this column is for some sibling
                     return null;
                 }
-
-                var value = Selectors[type][i](_enumerator.Current);
 
                 // todo - option: copy referenced objects - if it improves performance
                 if (Cols[i].IsNavigationProperty)
@@ -163,17 +174,17 @@ namespace EntityFramework.BulkInsert.Helpers
             return GetValue(i) == null;
         }
 
-        public string GetName(int i)
-        {
-            throw new NotImplementedException();
-        }
-
         public int GetOrdinal(string name)
         {
             return Indexes[name];
         }
 
         #region not needed methods
+
+        public string GetName(int i)
+        {
+            throw new NotImplementedException();
+        }
 
         public string GetDataTypeName(int i)
         {

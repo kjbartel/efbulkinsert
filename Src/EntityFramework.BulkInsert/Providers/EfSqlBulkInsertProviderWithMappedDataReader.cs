@@ -43,13 +43,8 @@ namespace EntityFramework.BulkInsert.Providers
 
         public override void Run<T>(IEnumerable<T> entities, SqlTransaction transaction, BulkInsertOptions options)
         {
-            var baseType = typeof(T);
-            var allTypes = baseType.GetDerivedTypes(true);
-
-            var neededMappings = allTypes.ToDictionary(x => x, x => Context.Db(x));
-
             var keepIdentity = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
-            using (var reader = new MappedDataReader<T>(entities, neededMappings, keepIdentity))
+            using (var reader = new MappedDataReader<T>(entities, Context))
             {
                 using (var sqlBulkCopy = new SqlBulkCopy(transaction.Connection, options.SqlBulkCopyOptions, transaction))
                 {
@@ -66,9 +61,13 @@ namespace EntityFramework.BulkInsert.Providers
                         sqlBulkCopy.SqlRowsCopied += options.Callback;
                     }
 
-                    foreach (var kvp in reader.Mappings)
+                    foreach (var kvp in reader.Cols)
                     {
-                        sqlBulkCopy.ColumnMappings.Add(kvp.Key, kvp.Value);
+                        if (kvp.Value.IsIdentity && !keepIdentity)
+                        {
+                            continue;
+                        }
+                        sqlBulkCopy.ColumnMappings.Add(kvp.Value.ColumnName, kvp.Value.ColumnName);
                     }
 
                     sqlBulkCopy.WriteToServer(reader);

@@ -4,68 +4,110 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Data.Entity.Migrations.Model;
-using System.Data.SqlServerCe;
+using System.Data.Entity.SqlServerCompact;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Providers;
+using EntityFramework.BulkInsert.SqlServerCe;
+using EntityFramework.BulkInsert.Test.CodeFirst;
+using EntityFramework.BulkInsert.Test.Domain;
+using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
+using ErikEJ.SqlCe;
+using NUnit.Framework;
+using TestContext = EntityFramework.BulkInsert.Test.CodeFirst.TestContext;
 
 namespace EntityFramework.BulkInsert.Test.CustomProvider
 {
-    public class Class1
+    [TestFixture]
+    public class SqlCeTest : TestBase
     {
-        public void Test()
+        [SetUp]
+        public void SetUp()
         {
             ProviderFactory.Register<SqlCeBulkInsertProvider>("System.Data.SqlServerCe.SqlCeConnection");
         }
-    }
 
-    public class SqlCeBulkInsertProvider : ProviderBase<SqlCeConnection, SqlCeTransaction>
-    {
-        protected override SqlCeConnection CreateConnection()
+        private IEnumerable<Item> Items(int count)
         {
-            return new SqlCeConnection(ConnectionString);
+            for (int i = 0; i < count; ++i)
+            {
+                yield return new Item {X = i, Y = count - i};
+            }
+        }
+            
+        [Test]
+        public void Test()
+        {
+            using (var ctx = new SqlCeContext("SqlCeContext"))
+            {
+                ctx.Database.Initialize(false);
+
+                ctx.Pages.Add(new Page { Content = "pla", CreatedAt = DateTime.Now });
+                ctx.SaveChanges();
+
+                var pages = ctx.Pages.ToArray();
+                Console.WriteLine(pages.Length);
+
+                Console.WriteLine(pages[0].CreatedAt);
+            }
         }
 
-        public override void Run<T>(IEnumerable<T> entities, SqlCeTransaction transaction, BulkInsertOptions options)
+        [Test]
+        public void Vs()
         {
-            using (var adapter = new SqlCeDataAdapter())
+            var sw = new Stopwatch();
+            sw.Start();
+            SqlCeBulkCopyOptions options = new SqlCeBulkCopyOptions();
+            using (SqlCeBulkCopy bc = new SqlCeBulkCopy("Data Source=|DataDirectory|Database1.sdf", options))
             {
-                var baseType = typeof(T);
-            var allTypes = baseType.GetDerivedTypes(true);
-
-            var neededMappings = allTypes.ToDictionary(x => x, x => Context.Db(x));
-
-            var keepIdentity = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
-                using (var reader = new MappedDataReader<T>(entities, neededMappings, keepIdentity))
-                {
-
-                    var commandText = string.Format("INSERT INTO {0} ({1}) VALUES ({2})", tableName, fields, parameters);
-
-                    var cmd = new SqlCeCommand(commandText, (SqlCeConnection) transaction.Connection, transaction);
-
-                    SqlCeParameter p = null;
-                    p = cmd.Parameters.Add("@p0", SqlDbType.NVarChar, 10, "x");
-                    p.SourceVersion = DataRowVersion.Original;
-
-                    adapter.InsertCommand = cmd;
-                    adapter.UpdateBatchSize = options.BatchSize;
-
-
-
-                    var ds = new DataSet();
-                    adapter.Fill(ds);
-
-                    foreach (var entity in entities)
-                    {
-                        ds.Tables[0].Rows.Add(values);
-                    }
-
-                    // exec
-                    adapter.Update(ds.Tables[0]);
-                }
+                bc.DestinationTableName = "Items";
+                bc.WriteToServer(Items(1000000), typeof(Item));
             }
+            sw.Stop();
+            Console.WriteLine("bulk insert elapsed {0}ms", sw.Elapsed.TotalMilliseconds);
+        }
+
+        [Test]
+        public void BulkInsert()
+        {
+            using (var ctx = new SqlCeContext("SqlCeContext"))
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                ctx.Database.Initialize(false);
+                ctx.BulkInsert(Items(1));
+                sw.Stop();
+                Console.WriteLine("initialized within {0}ms", sw.Elapsed.TotalMilliseconds);
+
+                sw.Restart();
+                ctx.BulkInsert(Items(1000000));
+                sw.Stop();
+                Console.WriteLine("bulk insert elapsed {0}ms", sw.Elapsed.TotalMilliseconds);
+
+                Console.WriteLine(ctx.Items.Count());
+            }
+        }
+    }
+
+    [DbConfigurationType(typeof(SqlCeConfig))] 
+    public class SqlCeContext : TestContext
+    {
+        public SqlCeContext(string cs) : base(cs)
+        {
+            
+        }
+    }
+
+    public class SqlCeConfig : DbConfiguration
+    {
+        public SqlCeConfig()
+        {
+            SetProviderServices(
+                SqlCeProviderServices.ProviderInvariantName,
+                SqlCeProviderServices.Instance);
         }
     }
 }

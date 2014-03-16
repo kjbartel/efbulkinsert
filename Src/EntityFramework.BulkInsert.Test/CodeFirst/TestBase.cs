@@ -33,9 +33,11 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
             }
         }
 
-        protected TestContext GetContext()
+        protected TestContext GetContext(string contextName = null)
         {
-            var ctx = new TestContext();
+            TestContext ctx = contextName == null 
+                ? new TestContext() 
+                : new TestContext(contextName);
 
             ctx.Configuration.AutoDetectChangesEnabled = false;
             ctx.Configuration.LazyLoadingEnabled = false;

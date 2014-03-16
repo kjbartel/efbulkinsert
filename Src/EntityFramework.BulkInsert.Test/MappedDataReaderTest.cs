@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using EntityFramework.BulkInsert.Helpers;
 using EntityFramework.BulkInsert.Test.CodeFirst;
 using EntityFramework.BulkInsert.Test.Domain;
@@ -15,18 +16,53 @@ namespace EntityFramework.BulkInsert.Test
     public class MappedDataReaderTest : TestBase
     {
         [Test]
+        public void Performance()
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            int x = 0;
+            foreach (var p in CreatePages(1000000))
+            {
+                for(int j = 0; j < 6; ++j)
+                {
+                    ++x;
+                }
+            }
+            sw.Stop();
+            Console.WriteLine("Elapsed {0}ms", sw.Elapsed.TotalMilliseconds);
+
+
+            using (var ctx = new TestContext())
+            {
+                var swv = new Stopwatch();
+
+                ctx.Database.Initialize(false);
+                sw.Restart();
+                using (var reader = new MappedDataReader<Page>(CreatePages(1000000), ctx))
+                {
+                    Console.WriteLine("Construct {0}ms", sw.Elapsed.TotalMilliseconds);
+                    while (reader.Read())
+                    {
+                        foreach (var col in reader.Cols)
+                        {
+                            swv.Start();
+                            var value = reader.GetValue(col.Key);
+                            swv.Stop();
+                        }
+                    }
+                }
+                sw.Stop();
+                Console.WriteLine("Elapsed {0}ms. Getting values took {1}ms", sw.Elapsed.TotalMilliseconds, swv.Elapsed.TotalMilliseconds);
+            }
+        }
+
+        [Test]
         public void SimpleTableReader()
         {
             using (var ctx = new TestContext())
             {
-                var tableMapping = ctx.Db<Page>();
-
-                var tableMappings = new Dictionary<Type, IEntityMap>
-                {
-                    {typeof (Page), tableMapping}
-                };
-
-                using (var reader = new MappedDataReader<Page>(new[] {new Page { Title = "test"}}, tableMappings))
+                using (var reader = new MappedDataReader<Page>(new[] {new Page { Title = "test"}}, ctx))
                 {
                     Assert.AreEqual(6, reader.FieldCount);
                 }
@@ -47,13 +83,7 @@ namespace EntityFramework.BulkInsert.Test
 
             using (var ctx = new TestContext())
             {
-                var tableMapping = ctx.Db<TestUser>();
-
-                var tableMappings = new Dictionary<Type, IEntityMap>
-                {
-                    {typeof (TestUser), tableMapping}
-                };
-                using (var reader = new MappedDataReader<TestUser>(new[] { user, emptyUser }, tableMappings))
+                using (var reader = new MappedDataReader<TestUser>(new[] { user, emptyUser }, ctx))
                 {
                     Assert.AreEqual(9, reader.FieldCount);
                     

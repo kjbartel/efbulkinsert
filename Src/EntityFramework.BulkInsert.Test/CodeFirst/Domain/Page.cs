@@ -22,4 +22,11 @@ namespace EntityFramework.BulkInsert.Test.Domain
 
         public DateTime? ModifiedAt { get; set; }
     }
+
+    public class Item
+    {
+        public int Id { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
 }

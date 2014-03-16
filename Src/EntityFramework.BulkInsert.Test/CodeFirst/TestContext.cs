@@ -45,6 +45,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
 
         private const string ContractDiscriminator = "__typeid";
 
+        public DbSet<Item> Items { get; set; }
 
         public DbSet<TestUser> Users { get; set; }
  
