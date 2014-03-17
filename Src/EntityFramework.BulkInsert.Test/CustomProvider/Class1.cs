@@ -45,13 +45,14 @@ namespace EntityFramework.BulkInsert.Test.CustomProvider
             {
                 ctx.Database.Initialize(false);
 
-                ctx.Pages.Add(new Page { Content = "pla", CreatedAt = DateTime.Now });
+                for (int i = 0; i < 1000000; i++)
+                {
+                    ctx.Pages.Add(new Page { Content = "pla", CreatedAt = DateTime.Now });
+                }
                 ctx.SaveChanges();
 
-                var pages = ctx.Pages.ToArray();
-                Console.WriteLine(pages.Length);
-
-                Console.WriteLine(pages[0].CreatedAt);
+                var pagescount = ctx.Pages.Count();
+                Console.WriteLine(pagescount);
             }
         }
 

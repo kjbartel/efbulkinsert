@@ -92,7 +92,7 @@ namespace EntityFramework.BulkInsert.Helpers
                      
                     if (col.IsDiscriminator)
                     {
-                        var x = Expression.Parameter(typeof(T), "x");
+                        var x = Expression.Parameter(baseType, "x");
 
                         var expression = Expression.Lambda<Func<T, object>>(Expression.Convert(Expression.Constant(col.DefaultValue), typeof(object)), x);
                         var selector = expression.Compile();
@@ -100,10 +100,12 @@ namespace EntityFramework.BulkInsert.Helpers
                     }
                     else
                     {
-                        var x = Expression.Parameter(typeof (T), "x");
+                        var x = Expression.Parameter(baseType, "x");
 
                         var propNames = col.PropertyName.Split('.');
-                        Expression propertyExpression = Expression.PropertyOrField(Expression.Convert(x, entityType), propNames[0]);
+                        Expression propertyExpression = baseType == entityType 
+                            ? Expression.PropertyOrField(x, propNames[0])
+                            : Expression.PropertyOrField(Expression.Convert(x, entityType), propNames[0]);
                         propertyExpression = propNames.Skip(1).Aggregate(propertyExpression, Expression.PropertyOrField);
 
                         var expression = Expression.Lambda<Func<T, object>>(Expression.Convert(propertyExpression, typeof (object)), x);
@@ -122,14 +124,14 @@ namespace EntityFramework.BulkInsert.Helpers
             _enumerator.Dispose();
         }
 
-        private Dictionary<int, Func<T, object>> _selectors; 
+        private Dictionary<int, Func<T, object>> _currentEntityTypeSelectors; 
         public bool Read()
         {
             var read = _enumerator.MoveNext();
             if (read)
             {
                 var t = _enumerator.Current.GetType();
-                _selectors = Selectors[t];
+                _currentEntityTypeSelectors = Selectors[t];
             }
             return read;
         }
@@ -146,7 +148,7 @@ namespace EntityFramework.BulkInsert.Helpers
                 object value;
                 try
                 {
-                    value = _selectors[i](_enumerator.Current);
+                    value = _currentEntityTypeSelectors[i](_enumerator.Current);
                 }
                 catch (KeyNotFoundException)
                 {
@@ -161,6 +163,7 @@ namespace EntityFramework.BulkInsert.Helpers
                     //var prop = Cols[i].Type.GetProperty(Cols[i].TableMapping.Pk.Prop);
                     //return prop.GetValue(value);
                 }
+
                 return value;
             }
             catch (NullReferenceException)
