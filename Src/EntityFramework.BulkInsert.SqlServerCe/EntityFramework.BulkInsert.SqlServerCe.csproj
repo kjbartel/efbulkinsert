@@ -40,7 +40,7 @@
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.MappingAPI">
-      <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.5\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>

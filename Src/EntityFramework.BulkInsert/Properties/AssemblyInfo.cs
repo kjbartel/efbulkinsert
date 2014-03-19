@@ -35,14 +35,14 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 
 #if EF4
-[assembly: AssemblyVersion("4.1.0.7")]
-[assembly: AssemblyFileVersion("4.1.0.7")]
+[assembly: AssemblyVersion("4.1.0.8")]
+[assembly: AssemblyFileVersion("4.1.0.8")]
 #endif
 #if EF5
-[assembly: AssemblyVersion("5.0.0.7")]
-[assembly: AssemblyFileVersion("5.0.0.7")]
+[assembly: AssemblyVersion("5.0.0.8")]
+[assembly: AssemblyFileVersion("5.0.0.8")]
 #endif
 #if EF6
-[assembly: AssemblyVersion("6.0.2.7")]
-[assembly: AssemblyFileVersion("6.0.2.7")]
+[assembly: AssemblyVersion("6.0.2.8")]
+[assembly: AssemblyFileVersion("6.0.2.8")]
 #endif

@@ -47,7 +47,7 @@
     <When Condition=" '$(Configuration)'=='Debug' ">
       <ItemGroup>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.5\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -59,7 +59,7 @@
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.5\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="System.Data.Entity" />
@@ -75,7 +75,7 @@
           <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.5\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -128,6 +128,31 @@
     <Compile Include="CodeFirst\BulkInsert\SqlServer\SqlBulkInsertWithMappedDataReaderPerformance.cs" />
     <Compile Include="CodeFirst\Domain\Foo.cs" />
     <Compile Include="CustomProvider\Class1.cs" />
+    <Compile Include="DatabaseFirst\Authors.cs">
+      <DependentUpon>TestDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseFirst\Books.cs">
+      <DependentUpon>TestDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseFirst\Class1.cs" />
+    <Compile Include="DatabaseFirst\Publishers.cs">
+      <DependentUpon>TestDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseFirst\TestDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseFirst\TestDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DatabaseFirst\TestDataModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestDataModel.edmx</DependentUpon>
+    </Compile>
     <Compile Include="DataTableHelperTest.cs" />
     <Compile Include="CodeFirst\Domain\Contract.cs" />
     <Compile Include="CodeFirst\Domain\Employee.cs" />
@@ -170,6 +195,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EntityDeploy Include="DatabaseFirst\TestDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>TestDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="DatabaseFirst\TestDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TestDataModel.edmx</DependentUpon>
+      <LastGenOutput>TestDataModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="DatabaseFirst\TestDataModel.edmx.diagram">
+      <DependentUpon>TestDataModel.edmx</DependentUpon>
+    </None>
+    <None Include="DatabaseFirst\TestDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TestDataModel.edmx</DependentUpon>
+      <LastGenOutput>TestDataModel.cs</LastGenOutput>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
