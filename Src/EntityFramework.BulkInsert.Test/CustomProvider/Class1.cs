@@ -22,7 +22,7 @@ using TestContext = EntityFramework.BulkInsert.Test.CodeFirst.TestContext;
 namespace EntityFramework.BulkInsert.Test.CustomProvider
 {
     [TestFixture]
-    public class SqlCeTest : TestBase
+    public class SqlCeTest : TestBase<SqlCeContext>
     {
         [SetUp]
         public void SetUp()
@@ -45,7 +45,7 @@ namespace EntityFramework.BulkInsert.Test.CustomProvider
             {
                 ctx.Database.Initialize(false);
 
-                for (int i = 0; i < 1000000; i++)
+                for (int i = 0; i < 1000; i++)
                 {
                     ctx.Pages.Add(new Page { Content = "pla", CreatedAt = DateTime.Now });
                 }
@@ -93,15 +93,19 @@ namespace EntityFramework.BulkInsert.Test.CustomProvider
         }
     }
 
+#if EF6
     [DbConfigurationType(typeof(SqlCeConfig))] 
+#endif
     public class SqlCeContext : TestContext
     {
+        public SqlCeContext() {}
+
         public SqlCeContext(string cs) : base(cs)
         {
             
         }
     }
-
+#if EF6
     public class SqlCeConfig : DbConfiguration
     {
         public SqlCeConfig()
@@ -111,4 +115,5 @@ namespace EntityFramework.BulkInsert.Test.CustomProvider
                 SqlCeProviderServices.Instance);
         }
     }
+#endif
 }

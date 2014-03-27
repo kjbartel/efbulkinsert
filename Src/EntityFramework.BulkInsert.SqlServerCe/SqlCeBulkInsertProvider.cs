@@ -22,31 +22,88 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             get { return Context.Database.Connection.ConnectionString; }
         }
 
-        public override void Run<T>(IEnumerable<T> entities, SqlCeTransaction transaction, BulkInsertOptions options)
+        public override void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
         {
-            var keepIdentity = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
+            using (var dbConnection = GetConnection())
+            {
+                dbConnection.Open();
+
+                if ((options.SqlBulkCopyOptions & SqlBulkCopyOptions.UseInternalTransaction) > 0)
+                {
+                    using (var transaction = dbConnection.BeginTransaction())
+                    {
+                        try
+                        {
+                            Run(entities, (SqlCeConnection)dbConnection, (SqlCeTransaction)transaction, options);
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            if (transaction.Connection != null)
+                            {
+                                transaction.Rollback();
+                            }
+                            throw;
+                        }
+                    }
+                }
+                else
+                {
+                    Run(entities, (SqlCeConnection)dbConnection, null, options);
+                }
+            }
+        }
+
+        private bool IsValidIdentityType(Type t)
+        {
+            switch (Type.GetTypeCode(t))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private void Run<T>(IEnumerable<T> entities, SqlCeConnection connection, SqlCeTransaction transaction, BulkInsertOptions options)
+        {
+            bool runIdentityScripts;
+            bool keepIdentity = runIdentityScripts = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
             var keepNulls = (SqlBulkCopyOptions.KeepNulls & options.SqlBulkCopyOptions) > 0;
-            
+
             using (var reader = new MappedDataReader<T>(entities, Context))
             {
-                if (keepIdentity)
+                var identityCols = reader.Cols.Values.Where(x => x.IsIdentity).ToArray();
+                if (identityCols.Length != 1 || !IsValidIdentityType(identityCols[0].Type))
                 {
-                    SetIdentityInsert(transaction, reader.TableName, true);
+                    runIdentityScripts = false;
                 }
 
-                var sqlCeConnection = (SqlCeConnection) transaction.Connection;
-                var colInfos = ColInfos(sqlCeConnection, reader)
+                if (keepIdentity && runIdentityScripts)
+                {
+                    SetIdentityInsert(connection, transaction, reader.TableName, true);
+                }
+
+                var colInfos = ColInfos(connection, reader)
                     .Values
                     .Where(x => !x.IsIdentity || keepIdentity)
                     .ToArray();
 
-                using (var cmd = new SqlCeCommand(reader.TableName, sqlCeConnection, transaction))
+                using (var cmd = CreateCommand(reader.TableName, connection, transaction))
                 {
                     cmd.CommandType = CommandType.TableDirect;
                     using (var rs = cmd.ExecuteResultSet(ResultSetOptions.Updatable))
                     {
                         var rec = rs.CreateRecord();
-
+                        int i = 0;
+                        long rowsCopied = 0;
                         while (reader.Read())
                         {
                             foreach (var colInfo in colInfos)
@@ -62,24 +119,49 @@ namespace EntityFramework.BulkInsert.SqlServerCe
                                 }
                             }
                             rs.Insert(rec);
+
+                            ++i;
+                            if (i == options.NotifyAfter && options.Callback != null)
+                            {
+                                rowsCopied += i;
+                                options.Callback(this, new SqlRowsCopiedEventArgs(rowsCopied));
+                                i = 0;
+                            }
                         }
                     }
                 }
 
-                if (keepIdentity)
+                if (keepIdentity && runIdentityScripts)
                 {
-                    SetIdentityInsert(transaction, reader.TableName, false);
+                    SetIdentityInsert(connection, transaction, reader.TableName, false);
                 }
             }
         }
 
-        private void SetIdentityInsert(SqlCeTransaction transaction, string tableName, bool on)
+        public override void Run<T>(IEnumerable<T> entities, SqlCeTransaction transaction, BulkInsertOptions options)
+        {
+            Run(entities, (SqlCeConnection)transaction.Connection, transaction, options);
+        }
+
+
+        private void SetIdentityInsert(SqlCeConnection connection, SqlCeTransaction transaction, string tableName, bool on)
         {
             var commandText = string.Format("SET IDENTITY_INSERT [{0}] {1}", tableName, on ? "ON" : "OFF");
-            using (var cmd = new SqlCeCommand(commandText, (SqlCeConnection)transaction.Connection, transaction))
+            using (var cmd = CreateCommand(commandText, connection, transaction))
             {
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        private SqlCeCommand CreateCommand(string commandText, SqlCeConnection connection, SqlCeTransaction transaction)
+        {
+            var cmd = new SqlCeCommand(commandText, connection);
+            if (transaction != null)
+            {
+                cmd.Transaction = transaction;
+            }
+            return cmd;
+
         }
 
         private class ColInfo

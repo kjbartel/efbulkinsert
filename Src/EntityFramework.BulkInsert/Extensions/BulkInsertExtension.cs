@@ -138,8 +138,20 @@ namespace EntityFramework.BulkInsert.Extensions
     {
         public int BatchSize { get; set; }
         public SqlBulkCopyOptions SqlBulkCopyOptions { get; set; }
+
+        /// <summary>
+        /// Number of the seconds for the operation to complete before it times out
+        /// </summary>
         public int TimeOut { get; set; }
+
+        /// <summary>
+        /// Callback event handler. Event is fired after n (value from NotifyAfter) rows have been copied to table where.
+        /// </summary>
         public SqlRowsCopiedEventHandler Callback { get; set; }
+
+        /// <summary>
+        /// Number of rows after callback is fired.
+        /// </summary>
         public int NotifyAfter { get; set; }
 
 #if !NET40

@@ -108,14 +108,11 @@
     <Compile Include="Exceptions\EntityTypeNotFoundException.cs" />
     <Compile Include="Extensions\BulkInsertExtension.cs" />
     <Compile Include="Helpers\MappedDataReader.cs" />
-    <Compile Include="Helpers\DataTableHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="ProviderFactory.cs" />
-    <Compile Include="Providers\EfSqlBulkInsertProviderWithDataTable.cs" />
     <Compile Include="Providers\EfSqlBulkInsertProviderWithMappedDataReader.cs" />
     <Compile Include="Providers\IEfBulkInsertProvider.cs" />
-    <Compile Include="Providers\EfSqlCeBulkiInsertProvider.cs" />
     <Compile Include="Providers\ProviderBase.cs" />
   </ItemGroup>
   <ItemGroup>

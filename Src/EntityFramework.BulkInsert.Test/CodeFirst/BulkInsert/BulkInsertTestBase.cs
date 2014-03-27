@@ -5,10 +5,12 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
 using System.Xml.Serialization;
+using Aske.Persistence.Entities;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Providers;
 using EntityFramework.BulkInsert.Test.CodeFirst.Domain;
 using EntityFramework.BulkInsert.Test.Domain;
+using EntityFramework.MappingAPI.Extensions;
 using NUnit.Framework;
 
 #if EF6
@@ -20,7 +22,9 @@ using System.Data.SqlClient;
 namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
 {
     [TestFixture]
-    public abstract class BulkInsertTestBase<T> : TestBase where T : IEfBulkInsertProvider, new()
+    public abstract class BulkInsertTestBase<T, TContext> : TestBase<TContext> 
+        where T : IEfBulkInsertProvider, new()
+        where TContext : TestContext, new()
     {
         public override void Setup()
         {
@@ -35,9 +39,40 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         {
             using (var ctx = GetContext())
             {
-                var foos = new[] { new ContractStock { Margin = 0.1m } };
-                var options = new BulkInsertOptions { EnableStreaming = true };
+                var meteringPoint = new MeteringPoint {CreatedAt = DateTime.Now};
+                ctx.Set<MeteringPoint>().Add(meteringPoint);
+                ctx.SaveChanges();
+
+
+                var foos = new[] { new ContractStock { Margin = 0.1m, MeteringPointId = meteringPoint.Id } };
+                var options = new BulkInsertOptions
+                {
+                    EnableStreaming = true,
+                };
                 ctx.BulkInsert(foos, options);
+            }
+        }
+
+        [Test]
+        public void BulkInsertCallback()
+        {
+            using (var ctx = GetContext())
+            {
+                var pages = CreatePages(50);
+                int i = 0;
+                var options = new BulkInsertOptions
+                {
+                    Callback = (sender, e) =>
+                    {
+                        Console.WriteLine(sender);
+                        Console.WriteLine("Rows copied: {0}", e.RowsCopied);
+                        ++i;
+                    },
+                    NotifyAfter = 10
+                };
+                ctx.BulkInsert(pages, options);
+
+                Assert.AreEqual(5, i);
             }
         }
 
@@ -82,7 +117,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         }
 
         [Test]
-        public void BulkInsertTableWithComputedColumns()
+        public virtual void BulkInsertTableWithComputedColumns()
         {
             using (var ctx = GetContext())
             {
@@ -137,6 +172,48 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                 var post = new Post { Oid = Guid.NewGuid(), StartDate = DateTime.Now, EndDate = DateTime.Now };
                 var posts = new[] { post };
                 ctx.BulkInsert(posts, SqlBulkCopyOptions.KeepIdentity);
+            }
+        }
+
+        [Test]
+        public void Issue1369Test()
+        {
+            using (var ctx = new Issue1369Context())
+            {
+                ctx.Database.CreateIfNotExists();
+
+                var loan = new LoanEntity
+                {
+                    Id = Guid.NewGuid(),
+                    MarketplaceLoanId = "x",
+                    MarketplaceMemberId = "x", 
+                    LoanAmount = 12,
+                    FundedAmount = 12,
+                    InterestRate = 100,
+                    ExpectedDefaultRate = 100,
+                    ServiceFeeRate = 10,
+                    Grade = "x",
+                    Subgrade = "x",
+                    HomeOwnership = "x",
+                    AnnualIncome = 123,
+                    ReviewStatus = "x",
+                    Url = "x",
+                    Purpose = "x",
+                    Title = "x",
+                    City = "x",
+                    State = "x",
+                    InitialListingStatus = "x",
+                    ListDate = DateTime.Now,
+                    CreditPullDate = DateTime.Now,
+                    EffectiveDate = DateTime.Now,
+                    CreditReports = new List<CreditReportEntity> { new CreditReportEntity
+                    {
+                        Id = Guid.NewGuid()
+                    }}
+                };  
+                var loans = new[] {loan};
+
+                ctx.BulkInsert(loans, SqlBulkCopyOptions.KeepIdentity);
             }
         }
 #endif
@@ -208,6 +285,10 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         {
             using (var ctx = GetContext())
             {
+                var mp = new MeteringPoint { CreatedAt = DateTime.Now };
+                ctx.Set<MeteringPoint>().Add(mp);
+                ctx.SaveChanges();
+
                 var contracts = new List<ContractBase>();
 
                 var c1 = new ContractFixed
@@ -215,18 +296,18 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                     AvpContractNr = "c_FIX", 
                     PackageFixedId = 1, 
                     PricesJson = "{}",
-                    MeteringPointId = 2,
+                    MeteringPointId = mp.Id,
                     ClientId = 5,
                 };
                 contracts.Add(c1);
 
-                var c2 = new ContractStock {AvpContractNr = "c_STX", Margin = 0.001m, PackageStockId = 2};
+                var c2 = new ContractStock { AvpContractNr = "c_STX", Margin = 0.001m, PackageStockId = 2, MeteringPointId = mp.Id };
                 contracts.Add(c2);
 
-                var k1 = new ContractKomb1 {AvpContractNr = "c_K1", PackageKomb1Id = 3};
+                var k1 = new ContractKomb1 { AvpContractNr = "c_K1", PackageKomb1Id = 3, MeteringPointId = mp.Id };
                 contracts.Add(k1);
 
-                var k2 = new ContractKomb2 {AvpContractNr = "c_K2", PackageKomb2Id = 3, Part1Margin = 0.1m};
+                var k2 = new ContractKomb2 { AvpContractNr = "c_K2", PackageKomb2Id = 3, Part1Margin = 0.1m, MeteringPointId = mp.Id };
                 contracts.Add(k2);
 
                 ctx.BulkInsert(contracts);
@@ -289,9 +370,13 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         {
             using (var ctx = GetContext())
             {
+                var mp = new MeteringPoint { CreatedAt = DateTime.Now };
+                ctx.Set<MeteringPoint>().Add(mp);
+                ctx.SaveChanges();
+
                 var contracts = new List<ContractKomb1>();
 
-                var k1 = new ContractKomb1 { AvpContractNr = "c_K1", PackageKomb1Id = 3 };
+                var k1 = new ContractKomb1 { AvpContractNr = "c_K1", PackageKomb1Id = 3, MeteringPointId = mp.Id };
                 contracts.Add(k1);
 
                 ctx.BulkInsert(contracts);

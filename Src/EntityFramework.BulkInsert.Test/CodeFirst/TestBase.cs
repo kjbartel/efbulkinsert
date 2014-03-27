@@ -11,7 +11,7 @@ using NUnit.Framework;
 
 namespace EntityFramework.BulkInsert.Test.CodeFirst
 {
-    public abstract class TestBase
+    public abstract class TestBase<T> where T : DbContext, new()
     {
         [SetUp]
         public virtual void Setup()
@@ -33,11 +33,11 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
             }
         }
 
-        protected TestContext GetContext(string contextName = null)
+        protected virtual T GetContext(string contextName = null)
         {
-            TestContext ctx = contextName == null 
-                ? new TestContext() 
-                : new TestContext(contextName);
+            T ctx = contextName == null 
+                ? new T() 
+                : (T)Activator.CreateInstance(typeof(T), contextName);
 
             ctx.Configuration.AutoDetectChangesEnabled = false;
             ctx.Configuration.LazyLoadingEnabled = false;
@@ -55,15 +55,6 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
             }
         }
 
-        protected static void RunBulkInsert<TItem>(TestContext ctx, IEnumerable<TItem> users, int itemsCount)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
-            ctx.BulkInsert(users);
-            sw.Stop();
-            Console.WriteLine("Bulk insert with {0} items elapsed: {1}ms", itemsCount, TimeSpan.FromTicks(sw.ElapsedTicks).TotalMilliseconds);
-        }
-
         protected static IEnumerable<TestUser> CreateUsers(int count)
         {
             for (int i = 0; i < count; ++i)
@@ -76,6 +67,15 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
                     Contact = new Contact { PhoneNumber = "123456", Address = new Address { City = "Tallinn", Country = "Estonia", County = "Harju", PostalCode = "-" } }
                 };
             }
+        }
+
+        protected static void RunBulkInsert<TItem>(T ctx, IEnumerable<TItem> users, int itemsCount)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            ctx.BulkInsert(users);
+            sw.Stop();
+            Console.WriteLine("Bulk insert with {0} items elapsed: {1}ms", itemsCount, TimeSpan.FromTicks(sw.ElapsedTicks).TotalMilliseconds);
         }
     }
 }

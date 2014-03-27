@@ -14,7 +14,7 @@ using TestContext = EntityFramework.BulkInsert.Test.CodeFirst.TestContext;
 namespace EntityFramework.BulkInsert.Test
 {
     [TestFixture]
-    public class MappedDataReaderTest : TestBase
+    public class MappedDataReaderTest : TestBase<TestContext>
     {
         [Test]
         public void Performance()

@@ -65,7 +65,7 @@ namespace EntityFramework.BulkInsert.Providers
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <param name="options"></param>
-        public void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
+        public virtual void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
         {
             using (var dbConnection = GetConnection())
             {
