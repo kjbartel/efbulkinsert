@@ -45,6 +45,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET40_EF6|AnyCPU'">
     <OutputPath>bin\NET40_EF6\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET40;EF6</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(Configuration)'=='Debug' ">
@@ -53,9 +55,15 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.dll</HintPath>
         </Reference>
+        <Reference Include="EntityFramework.SqlServer">
+          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+        </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
+        </Reference>
+        <Reference Include="EntityFramework.SqlServerCompact">
+          <HintPath>..\packages\EntityFramework.SqlServerCompact.6.0.2\lib\net40\EntityFramework.SqlServerCompact.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -67,7 +75,7 @@
           <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.4.1.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.4.1.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -80,7 +88,7 @@
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -95,8 +103,11 @@
           <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
+        </Reference>
+        <Reference Include="EntityFramework.SqlServerCompact">
+          <HintPath>..\packages\EntityFramework.SqlServerCompact.6.0.2\lib\net40\EntityFramework.SqlServerCompact.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -109,6 +120,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+   
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
@@ -120,8 +132,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFirst\BulkInsert\BulkInsertTestBase.cs" />
-    <Compile Include="CodeFirst\BulkInsert\SqlServer\SqlBulkInsertWithDataTable.cs" />
+    <Compile Include="CodeFirst\BulkInsert\PerformanceTestBase.cs" />
+    <Compile Include="CodeFirst\BulkInsert\SqlCe\SqlCeBulkInsertTest.cs" />
     <Compile Include="CodeFirst\BulkInsert\SqlServer\SqlBulkInsertWithMappedDataReader.cs" />
+    <Compile Include="CodeFirst\BulkInsert\SqlServer\SqlBulkInsertWithMappedDataReaderPerformance.cs" />
     <Compile Include="CodeFirst\Domain\ComplexTypes\Address.cs" />
     <Compile Include="CodeFirst\Domain\ComplexTypes\Contact.cs" />
     <Compile Include="CodeFirst\Domain\Contract.cs" />
@@ -136,9 +150,9 @@
     <Compile Include="CodeFirst\Domain\PageTranslations.cs" />
     <Compile Include="CodeFirst\Domain\Reading.cs" />
     <Compile Include="CodeFirst\Domain\TestUser.cs" />
+    <Compile Include="CodeFirst\SqlCeContext.cs" />
     <Compile Include="CodeFirst\TestBase.cs" />
     <Compile Include="CodeFirst\TestContext.cs" />
-    <Compile Include="DataTableHelperTest.cs" />
     <Compile Include="Issue1344\AccrualContext.cs" />
     <Compile Include="Issue1344\BaseXafConvention.cs" />
     <Compile Include="Issue1344\IntervalEntity.cs" />
@@ -146,10 +160,17 @@
     <Compile Include="Issue1344\PostConfiguration.cs" />
     <Compile Include="Issue1344\XafEntity.cs" />
     <Compile Include="Issue1344\XafGcEntity.cs" />
+    <Compile Include="Issue1369\CreditReportEntity.cs" />
+    <Compile Include="Issue1369\Issue1369Context.cs" />
+    <Compile Include="Issue1369\LoanEntity.cs" />
     <Compile Include="MappedDataReaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EntityFramework.BulkInsert.SqlServerCe\EntityFramework.BulkInsert.SqlServerCe.Net40.csproj">
+      <Project>{CB7718F0-634D-4E17-BB72-8040E8870618}</Project>
+      <Name>EntityFramework.BulkInsert.SqlServerCe.Net40</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EntityFramework.BulkInsert\EntityFramework.BulkInsert.Net40.csproj">
       <Project>{b4390e6f-b8f1-4c18-8ee7-d09a52ebc601}</Project>
       <Name>EntityFramework.BulkInsert.Net40</Name>
@@ -165,6 +186,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Issue1344\Table Schema.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CustomProvider\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

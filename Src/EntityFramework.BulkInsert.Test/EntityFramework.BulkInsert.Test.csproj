@@ -50,7 +50,7 @@
           <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
-		<Reference Include="EntityFramework">
+        <Reference Include="EntityFramework">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
         </Reference>
@@ -122,6 +122,7 @@
     <Compile Include="CodeFirst\BulkInsert\SqlServer\SqlBulkInsertWithMappedDataReader.cs" />
     <Compile Include="CodeFirst\BulkInsert\SqlServer\SqlBulkInsertWithMappedDataReaderPerformance.cs" />
     <Compile Include="CodeFirst\Domain\Foo.cs" />
+    <Compile Include="CodeFirst\SqlCeContext.cs" />
     <Compile Include="CustomProvider\Class1.cs" />
     <Compile Include="DatabaseFirst\Authors.cs">
       <DependentUpon>TestDataModel.tt</DependentUpon>

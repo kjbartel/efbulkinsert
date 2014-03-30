@@ -16,11 +16,11 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
         [SetUp]
         public virtual void Setup()
         {
-            using (var ctx = new TestContext())
+            using (var ctx = GetContext())
             {
                 if (ctx.Database.Exists())
                 {
-                    Database.SetInitializer<TestContext>(null);
+                    Database.SetInitializer<T>(null);
                 }
                 else
                 {
@@ -33,7 +33,8 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
             }
         }
 
-        protected virtual T GetContext(string contextName = null)
+        protected abstract T GetContext();
+        /*
         {
             T ctx = contextName == null 
                 ? new T() 
@@ -46,6 +47,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
 
             return ctx;
         }
+        */
 
         protected static IEnumerable<Page> CreatePages(int count)
         {

@@ -11,8 +11,14 @@ namespace EntityFramework.BulkInsert.Providers
         where TConnection : IDbConnection
         where TTransaction : IDbTransaction
     {
+        /// <summary>
+        /// Current DbContext
+        /// </summary>
         protected DbContext Context;
 
+        /// <summary>
+        /// Connection string which current dbcontext is using
+        /// </summary>
         protected virtual string ConnectionString
         {
             get
@@ -22,7 +28,7 @@ namespace EntityFramework.BulkInsert.Providers
         }
 
         /// <summary>
-        /// 
+        /// Sets DbContext for bulk insert to use
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>

@@ -13,6 +13,7 @@ using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Providers;
 using EntityFramework.BulkInsert.SqlServerCe;
 using EntityFramework.BulkInsert.Test.CodeFirst;
+using EntityFramework.Bulkinsert.Test.CodeFirst;
 using EntityFramework.BulkInsert.Test.Domain;
 using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
 using ErikEJ.SqlCe;
@@ -91,29 +92,10 @@ namespace EntityFramework.BulkInsert.Test.CustomProvider
                 Console.WriteLine(ctx.Items.Count());
             }
         }
-    }
 
-#if EF6
-    [DbConfigurationType(typeof(SqlCeConfig))] 
-#endif
-    public class SqlCeContext : TestContext
-    {
-        public SqlCeContext() {}
-
-        public SqlCeContext(string cs) : base(cs)
+        protected override SqlCeContext GetContext()
         {
-            
+            return new SqlCeContext("SqlCeContext");
         }
     }
-#if EF6
-    public class SqlCeConfig : DbConfiguration
-    {
-        public SqlCeConfig()
-        {
-            SetProviderServices(
-                SqlCeProviderServices.ProviderInvariantName,
-                SqlCeProviderServices.Instance);
-        }
-    }
-#endif
 }

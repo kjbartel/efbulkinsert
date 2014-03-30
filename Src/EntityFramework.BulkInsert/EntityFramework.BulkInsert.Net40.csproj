@@ -57,13 +57,13 @@
       <ItemGroup>
         <Reference Include="EntityFramework">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.SqlServer">
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -75,7 +75,7 @@
           <HintPath>..\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.4.1.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.4.1.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -87,7 +87,7 @@
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -96,13 +96,13 @@
       <ItemGroup>
         <Reference Include="EntityFramework">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.SqlServer">
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.5\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>
@@ -129,9 +129,7 @@
     <Compile Include="Helpers\MappedDataReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProviderFactory.cs" />
-    <Compile Include="Providers\EfSqlBulkInsertProviderWithDataTable.cs" />
     <Compile Include="Providers\EfSqlBulkInsertProviderWithMappedDataReader.cs" />
-    <Compile Include="Providers\EfSqlCeBulkiInsertProvider.cs" />
     <Compile Include="Providers\IEfBulkInsertProvider.cs" />
     <Compile Include="Providers\ProviderBase.cs" />
   </ItemGroup>

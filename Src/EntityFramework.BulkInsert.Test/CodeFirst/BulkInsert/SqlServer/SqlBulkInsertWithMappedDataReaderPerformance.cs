@@ -8,5 +8,10 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlServer
         {
             get { return "System.Data.SqlClient.SqlConnection"; }
         }
+
+        protected override TestContext GetContext()
+        {
+            return new TestContext();
+        }
     }
 }

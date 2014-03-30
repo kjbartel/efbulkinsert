@@ -5,7 +5,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
 using System.Xml.Serialization;
-using Aske.Persistence.Entities;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Providers;
 using EntityFramework.BulkInsert.Test.CodeFirst.Domain;
@@ -14,6 +13,7 @@ using EntityFramework.MappingAPI.Extensions;
 using NUnit.Framework;
 
 #if EF6
+using Aske.Persistence.Entities;
 using Calculator.Data;
 using Calculator.Entities;
 using System.Data.SqlClient;
@@ -34,6 +34,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
 
         protected abstract string ProviderConnectionType { get; }
 
+#if !NET40
         [Test]
         public void BulkInsertWithStreaming()
         {
@@ -52,6 +53,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                 ctx.BulkInsert(foos, options);
             }
         }
+#endif
 
         [Test]
         public void BulkInsertCallback()

@@ -84,5 +84,10 @@ namespace EntityFramework.BulkInsert.Test
                 }
             }
         }
+
+        protected override TestContext GetContext()
+        {
+            return new TestContext();
+        }
     }
 }
