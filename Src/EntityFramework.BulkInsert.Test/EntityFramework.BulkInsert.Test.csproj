@@ -36,11 +36,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET45_EF5|AnyCPU'">
     <OutputPath>bin\NET45_EF5\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET45;EF5</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET45_EF6|AnyCPU'">
     <OutputPath>bin\NET45_EF6\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET45;EF6</DefineConstants>
-    <DebugType>pdbonly</DebugType>
+    <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <Choose>
@@ -50,10 +52,6 @@
           <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
-        <Reference Include="EntityFramework">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
-        </Reference>
       </ItemGroup>
     </When>
     <When Condition=" '$(Configuration)'=='NET45_EF5' ">
@@ -61,6 +59,9 @@
         <Reference Include="EntityFramework">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+        </Reference>
+        <Reference Include="EntityFramework.SqlServer">
+          <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
           <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>

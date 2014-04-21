@@ -1,4 +1,11 @@
-﻿namespace EntityFramework.BulkInsert.Test.Domain.ComplexTypes
+﻿#if EF6
+using System.Data.Entity.Spatial;
+#endif
+#if EF5
+using System.Data.Spatial;
+#endif
+
+namespace EntityFramework.BulkInsert.Test.Domain.ComplexTypes
 {
     public class Address
     {
@@ -7,5 +14,7 @@
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string StreetAddress { get; set; }
+
+        public DbGeography Location { get; set; }
     }
 }

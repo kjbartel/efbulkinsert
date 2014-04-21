@@ -1,5 +1,10 @@
 ﻿using System.Data.Entity;
+#if EF6
 using System.Data.Entity.Core.Common;
+#endif
+#if EF5
+using System.Data.Common;
+#endif
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.SqlServerCompact;
 using EntityFramework.BulkInsert.SqlServerCe;
@@ -13,6 +18,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlCe
 
         public override void Setup()
         {
+#if ef6
             if (!_loaded)
             {
                 DbConfiguration.Loaded += (_, a) =>
@@ -23,7 +29,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlCe
                 };
                 _loaded = true;
             }
-
+#endif
             base.Setup();
         }
 

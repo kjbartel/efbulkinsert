@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+#if EF6
+using System.Data.Entity.Spatial;
+#endif
+#if EF5
+using System.Data.Spatial;
+#endif
 using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
@@ -9,6 +15,7 @@ using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Providers;
 using EntityFramework.BulkInsert.Test.CodeFirst.Domain;
 using EntityFramework.BulkInsert.Test.Domain;
+using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
 using EntityFramework.MappingAPI.Extensions;
 using NUnit.Framework;
 
@@ -266,8 +273,8 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                 var createdUser = users[0];
                 var userInDb = ctx.Users.OrderByDescending(x => x.CreatedAt).First();
 
-                var serializer = new XmlSerializer(typeof (TestUser));
-                serializer.Serialize(Console.Out, userInDb);
+                //var serializer = new XmlSerializer(typeof (TestUser));
+                //serializer.Serialize(Console.Out, userInDb);
 
                 Assert.AreEqual(createdUser.FirstName, userInDb.FirstName);
                 Assert.AreEqual(createdUser.LastName, userInDb.LastName);
@@ -279,6 +286,27 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                 Assert.AreEqual(createdUser.Contact.Address.StreetAddress, userInDb.Contact.Address.StreetAddress);
 
                 Assert.AreEqual(createdUser.CreatedAt.ToString(), userInDb.CreatedAt.ToString());
+            }
+        }
+
+        [Test]
+        public void DbGeographyObject()
+        {
+            using (var ctx = GetContext())
+            {
+                var user = new TestUser
+                {
+                    CreatedAt = DateTime.Now,
+                    Contact = new Contact
+                    {
+                        Address = new Address
+                        {
+                            Location = DbGeography.FromText("POINT(-122.336106 47.605049)")
+                        }
+                    }
+                };
+
+                ctx.BulkInsert(new [] { user});
             }
         }
 

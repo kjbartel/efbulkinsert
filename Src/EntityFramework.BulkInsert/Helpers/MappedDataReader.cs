@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+#if EF6
+using System.Data.Entity.Spatial;
+#else
+using System.Data.Spatial;
+#endif
 using System.Linq;
 using System.Linq.Expressions;
 using EntityFramework.BulkInsert.Extensions;
+using EntityFramework.BulkInsert.Providers;
 using EntityFramework.MappingAPI;
 using EntityFramework.MappingAPI.Extensions;
 
@@ -32,16 +38,20 @@ namespace EntityFramework.BulkInsert.Helpers
 
         public string SchemaName { get; private set; }
 
+        public IEfBulkInsertProvider Provider { get; private set; }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="enumerable"></param>
-        /// <param name="context"></param>
-        public MappedDataReader(IEnumerable<T> enumerable, DbContext context)
+        /// <param name="provider"></param>
+        public MappedDataReader(IEnumerable<T> enumerable, IEfBulkInsertProvider provider)
         {
+            Provider = provider;
+
             var baseType = typeof(T);
             var allTypes = baseType.GetDerivedTypes(true);
-            var tableMappings = allTypes.ToDictionary(x => x, context.Db);
+            var tableMappings = allTypes.ToDictionary(x => x, Provider.Context.Db);
 
             if (tableMappings == null || tableMappings.Count == 0)
             {
@@ -149,6 +159,12 @@ namespace EntityFramework.BulkInsert.Helpers
                 try
                 {
                     value = _currentEntityTypeSelectors[i](_enumerator.Current);
+
+                    var dbgeo = value as DbGeography;
+                    if (dbgeo != null)
+                    {
+                        return Provider.ConvertDbGeography(dbgeo);
+                    }
                 }
                 catch (KeyNotFoundException)
                 {

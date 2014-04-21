@@ -1,8 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.Data.Entity;
+#if EF6
+using System.Data.Entity.Spatial;
+#endif
+#if EF5
+using System.Data.Spatial;
+#endif
 using System.Diagnostics;
+using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Helpers;
+using EntityFramework.BulkInsert.Providers;
 using EntityFramework.BulkInsert.Test.CodeFirst;
 using EntityFramework.BulkInsert.Test.Domain;
 using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
@@ -16,6 +26,42 @@ namespace EntityFramework.BulkInsert.Test
     [TestFixture]
     public class MappedDataReaderTest : TestBase<TestContext>
     {
+        public class DummyProvider : IEfBulkInsertProvider
+        {
+            public IDbConnection GetConnection()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction, BulkInsertOptions options)
+            {
+                throw new NotImplementedException();
+            }
+
+            public DbContext Context { get; private set; }
+
+            public object ConvertDbGeography(DbGeography dbGeography)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IEfBulkInsertProvider SetContext(DbContext context)
+            {
+                Context = context;
+                return this;
+            }
+        }
+
+        private IEfBulkInsertProvider GetDummyProvider(DbContext context)
+        {
+            return new DummyProvider().SetContext(context);
+        }
+
         [Test]
         public void Performance()
         {
@@ -26,7 +72,7 @@ namespace EntityFramework.BulkInsert.Test
             {
                 ctx.Database.Initialize(false);
                 sw.Restart();
-                using (var reader = new MappedDataReader<Page>(CreatePages(1000000), ctx))
+                using (var reader = new MappedDataReader<Page>(CreatePages(1000000), GetDummyProvider(ctx)))
                 {
                     Console.WriteLine("Construct {0}ms", sw.Elapsed.TotalMilliseconds);
                     while (reader.Read())
@@ -49,7 +95,7 @@ namespace EntityFramework.BulkInsert.Test
         {
             using (var ctx = new TestContext())
             {
-                using (var reader = new MappedDataReader<Page>(new[] {new Page { Title = "test"}}, ctx))
+                using (var reader = new MappedDataReader<Page>(new[] { new Page { Title = "test" } }, GetDummyProvider(ctx)))
                 {
                     Assert.AreEqual(6, reader.FieldCount);
                 }
@@ -70,9 +116,9 @@ namespace EntityFramework.BulkInsert.Test
 
             using (var ctx = new TestContext())
             {
-                using (var reader = new MappedDataReader<TestUser>(new[] { user, emptyUser }, ctx))
+                using (var reader = new MappedDataReader<TestUser>(new[] { user, emptyUser }, GetDummyProvider(ctx)))
                 {
-                    Assert.AreEqual(9, reader.FieldCount);
+                    Assert.AreEqual(11, reader.FieldCount);
                     
                     while (reader.Read())
                     {

@@ -1,10 +1,19 @@
 ﻿using System.Collections.Generic;
+
+#if EF6
+using System.Data.Entity.Spatial;
+#else
+using System.Data.Spatial;
+#endif
+
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Linq;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Helpers;
 using EntityFramework.MappingAPI;
 using EntityFramework.MappingAPI.Extensions;
+using Microsoft.SqlServer.Types;
 
 namespace EntityFramework.BulkInsert.Providers
 {
@@ -20,7 +29,7 @@ namespace EntityFramework.BulkInsert.Providers
         public override void Run<T>(IEnumerable<T> entities, SqlTransaction transaction, BulkInsertOptions options)
         {
             var keepIdentity = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
-            using (var reader = new MappedDataReader<T>(entities, Context))
+            using (var reader = new MappedDataReader<T>(entities, this))
             {
                 using (var sqlBulkCopy = new SqlBulkCopy(transaction.Connection, options.SqlBulkCopyOptions, transaction))
                 {
@@ -49,6 +58,17 @@ namespace EntityFramework.BulkInsert.Providers
                     sqlBulkCopy.WriteToServer(reader);
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        public override object ConvertDbGeography(DbGeography o)
+        {
+            var chars = new SqlChars(o.WellKnownValue.WellKnownText);
+            return SqlGeography.STGeomFromText(chars, o.CoordinateSystemId);
         }
 
         /// <summary>

@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+#if EF6
+using System.Data.Entity.Spatial;
+#else
+using System.Data.Spatial;
+#endif
 using System.Data.SqlClient;
 using EntityFramework.BulkInsert.Extensions;
 
@@ -14,7 +19,7 @@ namespace EntityFramework.BulkInsert.Providers
         /// <summary>
         /// Current DbContext
         /// </summary>
-        protected DbContext Context;
+        public DbContext Context { get; private set; }
 
         /// <summary>
         /// Connection string which current dbcontext is using
@@ -26,6 +31,13 @@ namespace EntityFramework.BulkInsert.Providers
                 return (string)Context.Database.Connection.GetPrivateFieldValue("_connectionString");
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbGeography"></param>
+        /// <returns></returns>
+        public abstract object ConvertDbGeography(DbGeography dbGeography);
 
         /// <summary>
         /// Sets DbContext for bulk insert to use

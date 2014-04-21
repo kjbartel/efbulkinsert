@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+#if EF6
+using System.Data.Entity.Spatial;
+#else
+using System.Data.Spatial;
+#endif
 using System.Data.SqlClient;
 using System.Data.SqlServerCe;
 using System.Linq;
@@ -20,6 +25,11 @@ namespace EntityFramework.BulkInsert.SqlServerCe
         protected override string ConnectionString
         {
             get { return Context.Database.Connection.ConnectionString; }
+        }
+
+        public override object ConvertDbGeography(DbGeography dbGeography)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
@@ -78,7 +88,7 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             bool keepIdentity = runIdentityScripts = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
             var keepNulls = (SqlBulkCopyOptions.KeepNulls & options.SqlBulkCopyOptions) > 0;
 
-            using (var reader = new MappedDataReader<T>(entities, Context))
+            using (var reader = new MappedDataReader<T>(entities, this))
             {
                 var identityCols = reader.Cols.Values.Where(x => x.IsIdentity).ToArray();
                 if (identityCols.Length != 1 || !IsValidIdentityType(identityCols[0].Type))
