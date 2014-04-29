@@ -10,7 +10,7 @@ namespace EntityFramework.Bulkinsert.Test.CodeFirst
 #if EF6
     [DbConfigurationType(typeof (SqlCeConfig))]
 #endif
-    public class SqlCeContext : TestContext
+    public class SqlCeContext : TestBaseContext
     {
         public SqlCeContext()
         {

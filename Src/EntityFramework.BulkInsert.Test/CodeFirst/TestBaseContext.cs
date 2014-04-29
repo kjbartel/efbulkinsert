@@ -1,7 +1,6 @@
 ﻿using EntityFramework.BulkInsert.Test.CodeFirst.Domain;
 #if EF6
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Infrastructure;
 #endif
 
 #if EF4
@@ -18,29 +17,14 @@ using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
 
 namespace EntityFramework.BulkInsert.Test.CodeFirst
 {
-#if EF6
-    public class TestContextConfig : DbConfiguration
+    public class TestBaseContext : DbContext
     {
-        public TestContextConfig()
+        public TestBaseContext() : base("TestContext")
         {
-            SetExecutionStrategy("System.Data.SqlClient", () => new DefaultExecutionStrategy());
-        }
-    }
-#endif
-
-#if EF6
-    [DbConfigurationType(typeof(TestContextConfig))]
-#endif
-    public class TestContext : DbContext
-    {
-        public TestContext() : base("TestContext")
-        {
-            
         }
 
-        public TestContext(string connectionStringName) : base(connectionStringName)
+        public TestBaseContext(string connectionStringName) : base(connectionStringName)
         {
-            
         }
 
         private const string ContractDiscriminator = "__typeid";

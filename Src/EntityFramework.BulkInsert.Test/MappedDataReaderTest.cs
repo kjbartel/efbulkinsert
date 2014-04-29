@@ -19,12 +19,11 @@ using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
 using EntityFramework.MappingAPI;
 using EntityFramework.MappingAPI.Extensions;
 using NUnit.Framework;
-using TestContext = EntityFramework.BulkInsert.Test.CodeFirst.TestContext;
 
 namespace EntityFramework.BulkInsert.Test
 {
     [TestFixture]
-    public class MappedDataReaderTest : TestBase<TestContext>
+    public class MappedDataReaderTest : TestBase<TestBaseContext>
     {
         public class DummyProvider : IEfBulkInsertProvider
         {
@@ -43,13 +42,13 @@ namespace EntityFramework.BulkInsert.Test
                 throw new NotImplementedException();
             }
 
-            public DbContext Context { get; private set; }
-
-            public object ConvertDbGeography(DbGeography dbGeography)
+            public object GetSqlGeography(string wkt, int srid)
             {
                 throw new NotImplementedException();
             }
 
+            public DbContext Context { get; private set; }
+            
             public IEfBulkInsertProvider SetContext(DbContext context)
             {
                 Context = context;
@@ -68,7 +67,7 @@ namespace EntityFramework.BulkInsert.Test
             var sw = new Stopwatch();
             var swv = new Stopwatch();
 
-            using (var ctx = new TestContext())
+            using (var ctx = new TestBaseContext())
             {
                 ctx.Database.Initialize(false);
                 sw.Restart();
@@ -93,7 +92,7 @@ namespace EntityFramework.BulkInsert.Test
         [Test]
         public void SimpleTableReader()
         {
-            using (var ctx = new TestContext())
+            using (var ctx = new TestBaseContext())
             {
                 using (var reader = new MappedDataReader<Page>(new[] { new Page { Title = "test" } }, GetDummyProvider(ctx)))
                 {
@@ -114,7 +113,7 @@ namespace EntityFramework.BulkInsert.Test
             };
             var emptyUser = new TestUser();
 
-            using (var ctx = new TestContext())
+            using (var ctx = new TestBaseContext())
             {
                 using (var reader = new MappedDataReader<TestUser>(new[] { user, emptyUser }, GetDummyProvider(ctx)))
                 {
@@ -131,9 +130,9 @@ namespace EntityFramework.BulkInsert.Test
             }
         }
 
-        protected override TestContext GetContext()
+        protected override TestBaseContext GetContext()
         {
-            return new TestContext();
+            return new TestBaseContext();
         }
     }
 }

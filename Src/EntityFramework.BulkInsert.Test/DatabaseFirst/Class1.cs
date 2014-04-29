@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Test.CodeFirst;
 using NUnit.Framework;
@@ -11,7 +8,7 @@ using NUnit.Framework;
 namespace EntityFramework.BulkInsert.Test.DatabaseFirst
 {
 #if EF6
-    [DbConfigurationType(typeof(TestContextConfig))]
+    [DbConfigurationType(typeof(SqlContextConfig))]
 #endif
     public partial class DbFirstTestEntities
     {

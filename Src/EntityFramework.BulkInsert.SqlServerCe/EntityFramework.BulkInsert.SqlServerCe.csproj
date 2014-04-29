@@ -29,7 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET45_EF4|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET45_EF4|AnyCPU'">
     <OutputPath>bin\NET45_EF4\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET45;EF4</DefineConstants>
   </PropertyGroup>
@@ -52,10 +52,6 @@
   <Choose>
     <When Condition=" '$(Configuration)'=='Debug' ">
       <ItemGroup>
-        <Reference Include="EntityFramework">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
-        </Reference>
         <Reference Include="EntityFramework.MappingAPI">
           <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
@@ -80,13 +76,13 @@
       <ItemGroup>
         <Reference Include="EntityFramework">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.SqlServer">
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.7\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
       </ItemGroup>

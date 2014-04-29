@@ -9,9 +9,9 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlServer
             get { return "System.Data.SqlClient.SqlConnection"; }
         }
 
-        protected override TestContext GetContext()
+        protected override TestBaseContext GetContext()
         {
-            return new TestContext();
+            return new TestBaseContext();
         }
     }
 }

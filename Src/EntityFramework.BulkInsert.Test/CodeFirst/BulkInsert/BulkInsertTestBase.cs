@@ -31,7 +31,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
     [TestFixture]
     public abstract class BulkInsertTestBase<T, TContext> : TestBase<TContext> 
         where T : IEfBulkInsertProvider, new()
-        where TContext : TestContext, new()
+        where TContext : TestBaseContext, new()
     {
         public override void Setup()
         {
@@ -174,7 +174,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
 
 #if EF6
         [Test]
-        public void Issue1344Test()
+        public virtual void Issue1344Test()
         {
             using (var ctx = new AccrualContext())
             {
@@ -185,7 +185,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         }
 
         [Test]
-        public void Issue1369Test()
+        public virtual void Issue1369Test()
         {
             using (var ctx = new Issue1369Context())
             {
@@ -290,23 +290,17 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
         }
 
         [Test]
-        public void DbGeographyObject()
+        public virtual void DbGeographyObject()
         {
             using (var ctx = GetContext())
             {
-                var user = new TestUser
+                var pin = new PinPoint
                 {
-                    CreatedAt = DateTime.Now,
-                    Contact = new Contact
-                    {
-                        Address = new Address
-                        {
-                            Location = DbGeography.FromText("POINT(-122.336106 47.605049)")
-                        }
-                    }
+                    Name = "Foo",
+                    Coordinates = DbGeography.FromText("POINT(-122.336106 47.605049)")
                 };
 
-                ctx.BulkInsert(new [] { user});
+                ctx.BulkInsert(new [] { pin});
             }
         }
 

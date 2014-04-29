@@ -1,12 +1,12 @@
 ﻿using System.Data.Entity;
 #if EF6
 using System.Data.Entity.Core.Common;
+using System.Data.Entity.SqlServerCompact;
 #endif
 #if EF5
 using System.Data.Common;
 #endif
 using System.Data.Entity.Infrastructure;
-using System.Data.Entity.SqlServerCompact;
 using EntityFramework.BulkInsert.SqlServerCe;
 using EntityFramework.Bulkinsert.Test.CodeFirst;
 
@@ -45,6 +45,21 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlCe
             // not supported
         }
 
+        public override void DbGeographyObject()
+        {
+            // not supported
+        }
+#if EF6
+        public override void Issue1344Test()
+        {
+            // not relavant
+        }
+
+        public override void Issue1369Test()
+        {
+            // not relavant
+        }
+#endif
         protected override string ProviderConnectionType
         {
             get { return "System.Data.SqlServerCe.SqlCeConnection"; }

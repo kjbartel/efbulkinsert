@@ -1,20 +1,8 @@
 ﻿using System.Collections.Generic;
-
-#if NET45
-#if EF6
-using System.Data.Entity.Spatial;
-#else
-using System.Data.Spatial;
-#endif
-#endif
-
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
-using System.Linq;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Helpers;
-using EntityFramework.MappingAPI;
-using EntityFramework.MappingAPI.Extensions;
 using Microsoft.SqlServer.Types;
 
 namespace EntityFramework.BulkInsert.Providers
@@ -62,18 +50,17 @@ namespace EntityFramework.BulkInsert.Providers
             }
         }
 
-#if NET45
         /// <summary>
-        /// 
+        /// Get sql grography object from well known text
         /// </summary>
-        /// <param name="o"></param>
+        /// <param name="wkt">Well known text representation of the value</param>
+        /// <param name="srid">The identifier associated with the coordinate system.</param>
         /// <returns></returns>
-        public override object ConvertDbGeography(DbGeography o)
+        public override object GetSqlGeography(string wkt, int srid)
         {
-            var chars = new SqlChars(o.WellKnownValue.WellKnownText);
-            return SqlGeography.STGeomFromText(chars, o.CoordinateSystemId);
+            var chars = new SqlChars(wkt);
+            return SqlGeography.STGeomFromText(chars, srid);
         }
-#endif
 
         /// <summary>
         /// Create new sql connection

@@ -1,9 +1,4 @@
-﻿#if EF6
-using System.Data.Entity.Spatial;
-#endif
-#if EF5
-using System.Data.Spatial;
-#endif
+﻿
 
 namespace EntityFramework.BulkInsert.Test.Domain.ComplexTypes
 {
@@ -14,9 +9,5 @@ namespace EntityFramework.BulkInsert.Test.Domain.ComplexTypes
         public string City { get; set; }
         public string PostalCode { get; set; }
         public string StreetAddress { get; set; }
-
-#if NET45
-        public DbGeography Location { get; set; }
-#endif
     }
 }

@@ -168,7 +168,7 @@ namespace EntityFramework.BulkInsert.Helpers
                     var dbgeo = value as DbGeography;
                     if (dbgeo != null)
                     {
-                        return Provider.ConvertDbGeography(dbgeo);
+                        return Provider.GetSqlGeography(dbgeo.WellKnownValue.WellKnownText, dbgeo.CoordinateSystemId);
                     }
 #endif
                 }

@@ -2,16 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-
-#if NET45
-#if EF6
-using System.Data.Entity.Spatial;
-#else
-using System.Data.Spatial;
-#endif
-#endif
-
-using System.Data.SqlClient;
 using EntityFramework.BulkInsert.Extensions;
 
 namespace EntityFramework.BulkInsert.Providers
@@ -32,18 +22,22 @@ namespace EntityFramework.BulkInsert.Providers
         {
             get
             {
-                return (string)Context.Database.Connection.GetPrivateFieldValue("_connectionString");
+                return (string)DbConnection.GetPrivateFieldValue("_connectionString");
             }
         }
 
-#if NET45
+        protected virtual IDbConnection DbConnection
+        {
+            get { return Context.Database.Connection; }
+        }
+
         /// <summary>
-        /// 
+        /// Get sql grography object from well known text
         /// </summary>
-        /// <param name="dbGeography"></param>
+        /// <param name="wkt">Well known text representation of the value</param>
+        /// <param name="srid">The identifier associated with the coordinate system.</param>
         /// <returns></returns>
-        public abstract object ConvertDbGeography(DbGeography dbGeography);
-#endif
+        public abstract object GetSqlGeography(string wkt, int srid);
 
         /// <summary>
         /// Sets DbContext for bulk insert to use

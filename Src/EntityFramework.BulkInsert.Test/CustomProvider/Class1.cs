@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Data.Entity.Migrations.Model;
-using System.Data.Entity.SqlServerCompact;
+//using System.Data.Entity.SqlServerCompact;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -18,7 +18,6 @@ using EntityFramework.BulkInsert.Test.Domain;
 using EntityFramework.BulkInsert.Test.Domain.ComplexTypes;
 using ErikEJ.SqlCe;
 using NUnit.Framework;
-using TestContext = EntityFramework.BulkInsert.Test.CodeFirst.TestContext;
 
 namespace EntityFramework.BulkInsert.Test.CustomProvider
 {
