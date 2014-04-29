@@ -1,8 +1,10 @@
-﻿#if EF6
+﻿#if NET45
+#if EF6
 using System.Data.Entity.Spatial;
 #endif
 #if EF5
 using System.Data.Spatial;
+#endif
 #endif
 
 namespace EntityFramework.BulkInsert.Test.Domain

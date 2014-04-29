@@ -45,10 +45,13 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlCe
             // not supported
         }
 
+#if NET45
         public override void DbGeographyObject()
         {
             // not supported
         }
+#endif
+
 #if EF6
         public override void Issue1344Test()
         {

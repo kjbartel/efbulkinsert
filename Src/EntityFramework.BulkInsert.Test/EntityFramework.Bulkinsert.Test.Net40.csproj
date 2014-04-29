@@ -51,15 +51,13 @@
   <Choose>
     <When Condition=" '$(Configuration)'=='Debug' ">
       <ItemGroup>
-        <Reference Include="EntityFramework.SqlServer">
-          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+        <Reference Include="EntityFramework">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.7\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
-        </Reference>
-        <Reference Include="EntityFramework.SqlServerCompact">
-          <HintPath>..\packages\EntityFramework.SqlServerCompact.6.0.2\lib\net40\EntityFramework.SqlServerCompact.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -74,6 +72,10 @@
           <HintPath>..\packages\EntityFramework.MappingAPI.4.1.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
+		<Reference Include="System.Data.SqlServerCe.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+		  <Private>True</Private>
+		  <HintPath>..\packages\EntityFramework.SqlServerCompact.4.1.8482.1\lib\System.Data.SqlServerCe.Entity.dll</HintPath>
+		</Reference>
       </ItemGroup>
     </When>
     <When Condition=" '$(Configuration)'=='NET40_EF5' ">
@@ -87,6 +89,10 @@
           <HintPath>..\packages\EntityFramework.MappingAPI.5.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
+		<Reference Include="System.Data.SqlServerCe.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+		  <Private>True</Private>
+		  <HintPath>..\packages\EntityFramework.SqlServerCompact.4.1.8482.1\lib\System.Data.SqlServerCe.Entity.dll</HintPath>
+		</Reference>
       </ItemGroup>
     </When>
     <When Condition=" '$(Configuration)'=='NET40_EF6' ">
@@ -99,7 +105,7 @@
           <HintPath>..\packages\EntityFramework.6.0.2\lib\net40\EntityFramework.SqlServer.dll</HintPath>
         </Reference>
         <Reference Include="EntityFramework.MappingAPI">
-          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
+          <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.7\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="EntityFramework.SqlServerCompact">
@@ -109,10 +115,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EntityFramework.4.1.10311.0\lib\EntityFramework.dll</HintPath>
-    </Reference>
+    
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -126,10 +129,7 @@
       <Private>True</Private>
       <HintPath>..\packages\SqlServerCompact.4.0.8482.1\lib\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.SqlServerCe.Entity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\EntityFramework.SqlServerCompact.4.1.8482.1\lib\System.Data.SqlServerCe.Entity.dll</HintPath>
-    </Reference>
+    
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
@@ -161,11 +161,13 @@
     <Compile Include="CodeFirst\Domain\MeteringPoint.cs" />
     <Compile Include="CodeFirst\Domain\Page.cs" />
     <Compile Include="CodeFirst\Domain\PageTranslations.cs" />
+    <Compile Include="CodeFirst\Domain\PinPoint.cs" />
     <Compile Include="CodeFirst\Domain\Reading.cs" />
     <Compile Include="CodeFirst\Domain\TestUser.cs" />
     <Compile Include="CodeFirst\SqlCeContext.cs" />
+    <Compile Include="CodeFirst\SqlContext.cs" />
     <Compile Include="CodeFirst\TestBase.cs" />
-    <Compile Include="CodeFirst\TestContext.cs" />
+    <Compile Include="CodeFirst\TestBaseContext.cs" />
     <Compile Include="Issue1344\AccrualContext.cs" />
     <Compile Include="Issue1344\BaseXafConvention.cs" />
     <Compile Include="Issue1344\IntervalEntity.cs" />

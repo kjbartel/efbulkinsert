@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Data.Entity;
+
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #endif
 #if EF5
 using System.Data.Spatial;
 #endif
+#endif
+
 using System.Diagnostics;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Helpers;

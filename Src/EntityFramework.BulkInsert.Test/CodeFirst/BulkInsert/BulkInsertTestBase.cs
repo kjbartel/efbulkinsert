@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #endif
 #if EF5
 using System.Data.Spatial;
 #endif
+#endif
+
 using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
@@ -289,6 +293,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
             }
         }
 
+#if NET45
         [Test]
         public virtual void DbGeographyObject()
         {
@@ -303,6 +308,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                 ctx.BulkInsert(new [] { pin});
             }
         }
+#endif
 
         [Test]
         public void TPH_BaseType()

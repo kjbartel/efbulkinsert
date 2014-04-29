@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+#if EF4
+using System.ComponentModel.DataAnnotations;
+#endif
+#if EF6 || EF5
 using System.ComponentModel.DataAnnotations.Schema;
+#endif
 using System.Data.Entity.ModelConfiguration;
 
 namespace Aske.Persistence.Entities
