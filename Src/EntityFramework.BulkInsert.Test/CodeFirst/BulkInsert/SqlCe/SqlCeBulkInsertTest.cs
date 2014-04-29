@@ -18,7 +18,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert.SqlCe
 
         public override void Setup()
         {
-#if ef6
+#if EF6
             if (!_loaded)
             {
                 DbConfiguration.Loaded += (_, a) =>

@@ -15,6 +15,8 @@ namespace EntityFramework.BulkInsert.Test.Domain.ComplexTypes
         public string PostalCode { get; set; }
         public string StreetAddress { get; set; }
 
+#if NET45
         public DbGeography Location { get; set; }
+#endif
     }
 }

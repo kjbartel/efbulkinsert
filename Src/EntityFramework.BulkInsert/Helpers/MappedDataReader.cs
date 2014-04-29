@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #else
 using System.Data.Spatial;
 #endif
+#endif
+
 using System.Linq;
 using System.Linq.Expressions;
 using EntityFramework.BulkInsert.Extensions;
@@ -160,11 +164,13 @@ namespace EntityFramework.BulkInsert.Helpers
                 {
                     value = _currentEntityTypeSelectors[i](_enumerator.Current);
 
+#if NET45
                     var dbgeo = value as DbGeography;
                     if (dbgeo != null)
                     {
                         return Provider.ConvertDbGeography(dbgeo);
                     }
+#endif
                 }
                 catch (KeyNotFoundException)
                 {

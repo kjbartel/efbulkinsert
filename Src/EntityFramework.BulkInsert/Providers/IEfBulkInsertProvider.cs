@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using EntityFramework.BulkInsert.Extensions;
+
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #else
 using System.Data.Spatial;
 #endif
-using System.Data.SqlClient;
-using EntityFramework.BulkInsert.Extensions;
+#endif
 
 namespace EntityFramework.BulkInsert.Providers
 {
@@ -43,12 +45,14 @@ namespace EntityFramework.BulkInsert.Providers
         /// <returns></returns>
         IEfBulkInsertProvider SetContext(DbContext context);
 
+#if NET45
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dbGeography"></param>
         /// <returns></returns>
         object ConvertDbGeography(DbGeography dbGeography);
+#endif
 
         /// <summary>
         /// Current DbContext

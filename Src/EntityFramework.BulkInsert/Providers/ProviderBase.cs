@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #else
 using System.Data.Spatial;
 #endif
+#endif
+
 using System.Data.SqlClient;
 using EntityFramework.BulkInsert.Extensions;
 
@@ -32,12 +36,14 @@ namespace EntityFramework.BulkInsert.Providers
             }
         }
 
+#if NET45
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dbGeography"></param>
         /// <returns></returns>
         public abstract object ConvertDbGeography(DbGeography dbGeography);
+#endif
 
         /// <summary>
         /// Sets DbContext for bulk insert to use

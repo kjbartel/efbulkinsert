@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #else
 using System.Data.Spatial;
 #endif
+#endif
+
 using System.Data.SqlClient;
 using System.Data.SqlServerCe;
 using System.Linq;
@@ -27,10 +31,12 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             get { return Context.Database.Connection.ConnectionString; }
         }
 
+#if NET45
         public override object ConvertDbGeography(DbGeography dbGeography)
         {
             throw new NotImplementedException();
         }
+#endif
 
         public override void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
         {

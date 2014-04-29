@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 
+#if NET45
 #if EF6
 using System.Data.Entity.Spatial;
 #else
 using System.Data.Spatial;
+#endif
 #endif
 
 using System.Data.SqlClient;
@@ -60,6 +62,7 @@ namespace EntityFramework.BulkInsert.Providers
             }
         }
 
+#if NET45
         /// <summary>
         /// 
         /// </summary>
@@ -70,6 +73,7 @@ namespace EntityFramework.BulkInsert.Providers
             var chars = new SqlChars(o.WellKnownValue.WellKnownText);
             return SqlGeography.STGeomFromText(chars, o.CoordinateSystemId);
         }
+#endif
 
         /// <summary>
         /// Create new sql connection
