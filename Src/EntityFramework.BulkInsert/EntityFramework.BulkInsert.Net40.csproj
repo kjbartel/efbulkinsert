@@ -37,14 +37,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET40_EF4|AnyCPU'">
     <OutputPath>bin\NET40_EF4\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET40;EF4</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET40_EF5|AnyCPU'">
     <OutputPath>bin\NET40_EF5\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET40;EF5</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NET40_EF6|AnyCPU'">
     <OutputPath>bin\NET40_EF6\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NET40;EF6</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -59,7 +65,7 @@
           <HintPath>..\packages\EntityFramework.MappingAPI.6.0.0.6\lib\net40\EntityFramework.MappingAPI.dll</HintPath>
           <Private>True</Private>
         </Reference>
-		<Reference Include="EntityFramework">
+        <Reference Include="EntityFramework">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
         </Reference>

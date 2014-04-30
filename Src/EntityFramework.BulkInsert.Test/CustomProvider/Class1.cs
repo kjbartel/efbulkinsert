@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Data.Entity.Migrations.Model;
 //using System.Data.Entity.SqlServerCompact;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;

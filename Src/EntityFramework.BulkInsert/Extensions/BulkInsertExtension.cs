@@ -150,7 +150,7 @@ namespace EntityFramework.BulkInsert.Extensions
         public SqlRowsCopiedEventHandler Callback { get; set; }
 
         /// <summary>
-        /// Number of rows after callback is fired.
+        /// Used with property Callback. Sets number of rows after callback is fired.
         /// </summary>
         public int NotifyAfter { get; set; }
 
