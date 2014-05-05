@@ -60,7 +60,8 @@ namespace EntityFramework.BulkInsert.Extensions
         public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, BulkInsertOptions options)
         {
             var bulkInsert = ProviderFactory.Get(context);
-            bulkInsert.Run(entities, options);
+            bulkInsert.Options = options;
+            bulkInsert.Run(entities);
         }
 
         /// <summary>
@@ -85,14 +86,13 @@ namespace EntityFramework.BulkInsert.Extensions
         /// <param name="batchSize"></param>
         public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, SqlBulkCopyOptions sqlBulkCopyOptions, int? batchSize = null)
         {
-            var bulkInsert = ProviderFactory.Get(context);
+
             var options = new BulkInsertOptions {SqlBulkCopyOptions = sqlBulkCopyOptions};
             if (batchSize.HasValue)
             {
                 options.BatchSize = batchSize.Value;
             }
-
-            bulkInsert.Run(entities, options);
+            context.BulkInsert(entities, options);
         }
 
         /// <summary>
@@ -106,14 +106,12 @@ namespace EntityFramework.BulkInsert.Extensions
         /// <param name="batchSize"></param>
         public static void BulkInsert<T>(this DbContext context, IEnumerable<T> entities, IDbTransaction transaction, SqlBulkCopyOptions sqlBulkCopyOptions = SqlBulkCopyOptions.Default, int? batchSize = null)
         {
-            var bulkInsert = ProviderFactory.Get(context);
             var options = new BulkInsertOptions {SqlBulkCopyOptions = sqlBulkCopyOptions};
             if (batchSize.HasValue)
             {
                 options.BatchSize = batchSize.Value;
             }
-
-            bulkInsert.Run(entities, transaction, options);
+            context.BulkInsert(entities, options);
         }
 
         /*
@@ -136,7 +134,14 @@ namespace EntityFramework.BulkInsert.Extensions
 
     public class BulkInsertOptions
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public int BatchSize { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public SqlBulkCopyOptions SqlBulkCopyOptions { get; set; }
 
         /// <summary>
@@ -155,6 +160,9 @@ namespace EntityFramework.BulkInsert.Extensions
         public int NotifyAfter { get; set; }
 
 #if !NET40
+        /// <summary>
+        /// 
+        /// </summary>
         public bool EnableStreaming { get; set; }
 #endif
 

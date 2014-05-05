@@ -35,12 +35,12 @@ namespace EntityFramework.BulkInsert.Test
                 throw new NotImplementedException();
             }
 
-            public void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
+            public void Run<T>(IEnumerable<T> entities)
             {
                 throw new NotImplementedException();
             }
 
-            public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction, BulkInsertOptions options)
+            public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction)
             {
                 throw new NotImplementedException();
             }
@@ -51,7 +51,8 @@ namespace EntityFramework.BulkInsert.Test
             }
 
             public DbContext Context { get; private set; }
-            
+            public BulkInsertOptions Options { get; set; }
+
             public IEfBulkInsertProvider SetContext(DbContext context)
             {
                 Context = context;

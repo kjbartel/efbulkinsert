@@ -10,30 +10,29 @@ namespace EntityFramework.BulkInsert.Providers
     public class EfSqlBulkInsertProviderWithMappedDataReader : ProviderBase<SqlConnection, SqlTransaction>
     {
         /// <summary>
-        /// 
+        /// Runs sql bulk insert using custom IDataReader
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <param name="transaction"></param>
-        /// <param name="options"></param>
-        public override void Run<T>(IEnumerable<T> entities, SqlTransaction transaction, BulkInsertOptions options)
+        public override void Run<T>(IEnumerable<T> entities, SqlTransaction transaction)
         {
-            var keepIdentity = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
+            var keepIdentity = (SqlBulkCopyOptions.KeepIdentity & Options.SqlBulkCopyOptions) > 0;
             using (var reader = new MappedDataReader<T>(entities, this))
             {
-                using (var sqlBulkCopy = new SqlBulkCopy(transaction.Connection, options.SqlBulkCopyOptions, transaction))
+                using (var sqlBulkCopy = new SqlBulkCopy(transaction.Connection, Options.SqlBulkCopyOptions, transaction))
                 {
-                    sqlBulkCopy.BulkCopyTimeout = options.TimeOut;
-                    sqlBulkCopy.BatchSize = options.BatchSize;
+                    sqlBulkCopy.BulkCopyTimeout = Options.TimeOut;
+                    sqlBulkCopy.BatchSize = Options.BatchSize;
                     sqlBulkCopy.DestinationTableName = string.Format("[{0}].[{1}]", reader.SchemaName, reader.TableName);
 #if !NET40
-                    sqlBulkCopy.EnableStreaming = options.EnableStreaming;
+                    sqlBulkCopy.EnableStreaming = Options.EnableStreaming;
 #endif
 
-                    sqlBulkCopy.NotifyAfter = options.NotifyAfter;
-                    if (options.Callback != null)
+                    sqlBulkCopy.NotifyAfter = Options.NotifyAfter;
+                    if (Options.Callback != null)
                     {
-                        sqlBulkCopy.SqlRowsCopied += options.Callback;
+                        sqlBulkCopy.SqlRowsCopied += Options.Callback;
                     }
 
                     foreach (var kvp in reader.Cols)

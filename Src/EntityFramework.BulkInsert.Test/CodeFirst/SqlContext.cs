@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using EntityFramework.BulkInsert.Test.CodeFirst.Domain;
 using EntityFramework.BulkInsert.Test.Domain;
 #if EF6
 using System.Data.Entity.Infrastructure;

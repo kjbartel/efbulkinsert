@@ -15,6 +15,8 @@ namespace EntityFramework.BulkInsert.Providers
         /// </summary>
         public DbContext Context { get; private set; }
 
+        public BulkInsertOptions Options { get; set; }
+
         /// <summary>
         /// Connection string which current dbcontext is using
         /// </summary>
@@ -71,10 +73,9 @@ namespace EntityFramework.BulkInsert.Providers
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <param name="transaction"></param>
-        /// <param name="options"></param>
-        public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction, BulkInsertOptions options)
+        public void Run<T>(IEnumerable<T> entities, IDbTransaction transaction)
         {
-            Run(entities, (TTransaction)transaction, options);
+            Run(entities, (TTransaction)transaction);
         }
 
         /// <summary>
@@ -82,8 +83,7 @@ namespace EntityFramework.BulkInsert.Providers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
-        /// <param name="options"></param>
-        public virtual void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
+        public virtual void Run<T>(IEnumerable<T> entities)
         {
             using (var dbConnection = GetConnection())
             {
@@ -93,7 +93,7 @@ namespace EntityFramework.BulkInsert.Providers
                 {
                     try
                     {
-                        Run(entities, transaction, options);
+                        Run(entities, transaction);
                         transaction.Commit();
                     }
                     catch (Exception)
@@ -114,7 +114,6 @@ namespace EntityFramework.BulkInsert.Providers
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <param name="transaction"></param>
-        /// <param name="options"></param>
-        public abstract void Run<T>(IEnumerable<T> entities, TTransaction transaction, BulkInsertOptions options);
+        public abstract void Run<T>(IEnumerable<T> entities, TTransaction transaction);
     }
 }

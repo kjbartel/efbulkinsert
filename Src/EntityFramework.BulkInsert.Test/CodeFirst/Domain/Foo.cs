@@ -15,4 +15,9 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.Domain
         public int Y { get; set; }
         public int Z { get; set; }
     }
+
+    public class FooExtended : Foo
+    {
+        public string ExtendedValue { get; set; }
+    }
 }

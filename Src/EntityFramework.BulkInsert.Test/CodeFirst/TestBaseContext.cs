@@ -60,6 +60,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst
 
             mb.Entity<Foo>().ToTable("Foos", "dbx");
             mb.Entity<Foo>().Property(x => x.Z).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Computed);
+            mb.Ignore<FooExtended>();
 
             mb.Entity<TestUser>().ToTable("Users");
             mb.Entity<TestUser>().HasKey(x => x.Id);

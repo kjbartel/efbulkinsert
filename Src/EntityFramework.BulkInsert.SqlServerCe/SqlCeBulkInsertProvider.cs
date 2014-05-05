@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Data.SqlServerCe;
 using System.Linq;
-using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Helpers;
 using EntityFramework.BulkInsert.Providers;
 
@@ -33,19 +32,19 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             throw new NotImplementedException();
         }
 
-        public override void Run<T>(IEnumerable<T> entities, BulkInsertOptions options)
+        public override void Run<T>(IEnumerable<T> entities)
         {
             using (var dbConnection = GetConnection())
             {
                 dbConnection.Open();
 
-                if ((options.SqlBulkCopyOptions & SqlBulkCopyOptions.UseInternalTransaction) > 0)
+                if ((Options.SqlBulkCopyOptions & SqlBulkCopyOptions.UseInternalTransaction) > 0)
                 {
                     using (var transaction = dbConnection.BeginTransaction())
                     {
                         try
                         {
-                            Run(entities, (SqlCeConnection)dbConnection, (SqlCeTransaction)transaction, options);
+                            Run(entities, (SqlCeConnection)dbConnection, (SqlCeTransaction)transaction);
                             transaction.Commit();
                         }
                         catch (Exception)
@@ -60,7 +59,7 @@ namespace EntityFramework.BulkInsert.SqlServerCe
                 }
                 else
                 {
-                    Run(entities, (SqlCeConnection)dbConnection, null, options);
+                    Run(entities, (SqlCeConnection)dbConnection, null);
                 }
             }
         }
@@ -83,11 +82,11 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             }
         }
 
-        private void Run<T>(IEnumerable<T> entities, SqlCeConnection connection, SqlCeTransaction transaction, BulkInsertOptions options)
+        private void Run<T>(IEnumerable<T> entities, SqlCeConnection connection, SqlCeTransaction transaction)
         {
             bool runIdentityScripts;
-            bool keepIdentity = runIdentityScripts = (SqlBulkCopyOptions.KeepIdentity & options.SqlBulkCopyOptions) > 0;
-            var keepNulls = (SqlBulkCopyOptions.KeepNulls & options.SqlBulkCopyOptions) > 0;
+            bool keepIdentity = runIdentityScripts = (SqlBulkCopyOptions.KeepIdentity & Options.SqlBulkCopyOptions) > 0;
+            var keepNulls = (SqlBulkCopyOptions.KeepNulls & Options.SqlBulkCopyOptions) > 0;
 
             using (var reader = new MappedDataReader<T>(entities, this))
             {
@@ -132,10 +131,10 @@ namespace EntityFramework.BulkInsert.SqlServerCe
                             rs.Insert(rec);
 
                             ++i;
-                            if (i == options.NotifyAfter && options.Callback != null)
+                            if (i == Options.NotifyAfter && Options.Callback != null)
                             {
                                 rowsCopied += i;
-                                options.Callback(this, new SqlRowsCopiedEventArgs(rowsCopied));
+                                Options.Callback(this, new SqlRowsCopiedEventArgs(rowsCopied));
                                 i = 0;
                             }
                         }
@@ -149,9 +148,9 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             }
         }
 
-        public override void Run<T>(IEnumerable<T> entities, SqlCeTransaction transaction, BulkInsertOptions options)
+        public override void Run<T>(IEnumerable<T> entities, SqlCeTransaction transaction)
         {
-            Run(entities, (SqlCeConnection)transaction.Connection, transaction, options);
+            Run(entities, (SqlCeConnection)transaction.Connection, transaction);
         }
 
 

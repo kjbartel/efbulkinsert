@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-
+using EntityFramework.BulkInsert.Exceptions;
 #if NET45
 #if EF6
 using System.Data.Entity.Spatial;
@@ -31,6 +31,8 @@ namespace EntityFramework.BulkInsert.Helpers
         /// </summary>
         public Dictionary<int, IPropertyMap> Cols { get; private set; } 
 
+        public Dictionary<Type, List<object>> Refs { get; private set; } 
+
         /// <summary>
         /// Ordinal positions of columns
         /// </summary>
@@ -51,13 +53,30 @@ namespace EntityFramework.BulkInsert.Helpers
         /// <param name="provider"></param>
         public MappedDataReader(IEnumerable<T> enumerable, IEfBulkInsertProvider provider)
         {
+            Refs = new Dictionary<Type, List<object>>();
+
             Provider = provider;
 
             var baseType = typeof(T);
             var allTypes = baseType.GetDerivedTypes(true);
-            var tableMappings = allTypes.ToDictionary(x => x, Provider.Context.Db);
 
-            if (tableMappings == null || tableMappings.Count == 0)
+            //var tableMappings = allTypes.ToDictionary(x => x, Provider.Context.Db);
+            var tableMappings = new Dictionary<Type, IEntityMap>();
+            foreach (var type in allTypes)
+            {
+                try
+                {
+                    var tableMapping = Provider.Context.Db(type);
+                    tableMappings[type] = tableMapping;
+                }
+                catch
+                {
+                    // todo - catch only EntityTypeNoFoundException when mapping api is upgraded
+                    // Maybe these derived types are not used. Throw when invalid type is used while reading.
+                }
+            }
+
+            if (tableMappings.Count == 0)
             {
                 throw new Exception("No table mappings provided.");
             }
@@ -145,7 +164,14 @@ namespace EntityFramework.BulkInsert.Helpers
             if (read)
             {
                 var t = _enumerator.Current.GetType();
-                _currentEntityTypeSelectors = Selectors[t];
+                try
+                {
+                    _currentEntityTypeSelectors = Selectors[t];
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new EntityTypeNotFoundException(t);
+                }
             }
             return read;
         }
@@ -181,6 +207,7 @@ namespace EntityFramework.BulkInsert.Helpers
                 // todo - option: copy referenced objects - if it improves performance
                 if (Cols[i].IsNavigationProperty)
                 {
+
                     return 0;
                     //var prop = Cols[i].Type.GetProperty(Cols[i].TableMapping.Pk.Prop);
                     //return prop.GetValue(value);

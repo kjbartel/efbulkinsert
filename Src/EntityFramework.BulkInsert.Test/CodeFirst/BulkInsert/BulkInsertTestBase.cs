@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-
+using EntityFramework.BulkInsert.Exceptions;
 #if NET45
 #if EF6
 using System.Data.Entity.Spatial;
@@ -33,7 +33,7 @@ using System.Data.SqlClient;
 namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
 {
     [TestFixture]
-    public abstract class BulkInsertTestBase<T, TContext> : TestBase<TContext> 
+    public abstract class BulkInsertTestBase<T, TContext> : TestBase<TContext>
         where T : IEfBulkInsertProvider, new()
         where TContext : TestBaseContext, new()
     {
@@ -56,7 +56,7 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
                 ctx.SaveChanges();
 
 
-                var foos = new[] { new ContractStock { Margin = 0.1m, MeteringPointId = meteringPoint.Id } };
+                var foos = new[] {new ContractStock {Margin = 0.1m, MeteringPointId = meteringPoint.Id}};
                 var options = new BulkInsertOptions
                 {
                     EnableStreaming = true,
@@ -95,6 +95,17 @@ namespace EntityFramework.BulkInsert.Test.CodeFirst.BulkInsert
             using (var ctx = GetContext())
             {
                 var foos = new[] {new Foo {Bar = "bar"}};
+                ctx.BulkInsert(foos);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(EntityTypeNotFoundException))]
+        public void TryToInsertIgnoredEntity()
+        {
+            using (var ctx = GetContext())
+            {
+                var foos = new Foo[] { new Foo { Bar = "bar" }, new FooExtended {ExtendedValue = "pla"} };
                 ctx.BulkInsert(foos);
             }
         }

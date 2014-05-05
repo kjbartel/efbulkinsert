@@ -18,8 +18,7 @@ namespace EntityFramework.BulkInsert.Providers
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
-        /// <param name="options"></param>
-        void Run<T>(IEnumerable<T> entities, BulkInsertOptions options);
+        void Run<T>(IEnumerable<T> entities);
 
         /// <summary>
         /// 
@@ -27,8 +26,7 @@ namespace EntityFramework.BulkInsert.Providers
         /// <typeparam name="T"></typeparam>
         /// <param name="entities"></param>
         /// <param name="transaction"></param>
-        /// <param name="options"></param>
-        void Run<T>(IEnumerable<T> entities, IDbTransaction transaction, BulkInsertOptions options);
+        void Run<T>(IEnumerable<T> entities, IDbTransaction transaction);
 
         /// <summary>
         /// 
@@ -49,5 +47,10 @@ namespace EntityFramework.BulkInsert.Providers
         /// Current DbContext
         /// </summary>
         DbContext Context { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        BulkInsertOptions Options { get; set; }
     }
 }
