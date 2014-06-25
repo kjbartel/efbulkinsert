@@ -196,6 +196,12 @@ namespace EntityFramework.BulkInsert.Helpers
                     {
                         return Provider.GetSqlGeography(dbgeo.WellKnownValue.WellKnownText, dbgeo.CoordinateSystemId);
                     }
+
+                    var dbgeom = value as DbGeometry;
+                    if (dbgeom != null)
+                    {
+                        return Provider.GetSqlGeometry(dbgeom.WellKnownValue.WellKnownText, dbgeom.CoordinateSystemId);
+                    }
 #endif
                 }
                 catch (KeyNotFoundException)

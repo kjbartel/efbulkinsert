@@ -35,6 +35,8 @@ namespace EntityFramework.BulkInsert.Providers
         /// <returns></returns>
         IEfBulkInsertProvider SetContext(DbContext context);
 
+#if NET45
+
         /// <summary>
         /// Get sql grography object from well known text
         /// </summary>
@@ -42,7 +44,17 @@ namespace EntityFramework.BulkInsert.Providers
         /// <param name="srid">The identifier associated with the coordinate system.</param>
         /// <returns></returns>
         object GetSqlGeography(string wkt, int srid);
+
+        /// <summary>
+        /// Get sql geometry object from well known text
+        /// </summary>
+        /// <param name="wkt">Well known text representation of the value</param>
+        /// <param name="srid">The identifier associated with the coordinate system.</param>
+        /// <returns></returns>
+        object GetSqlGeometry(string wkt, int srid);
       
+#endif
+
         /// <summary>
         /// Current DbContext
         /// </summary>

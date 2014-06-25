@@ -33,6 +33,8 @@ namespace EntityFramework.BulkInsert.Providers
             get { return Context.Database.Connection; }
         }
 
+#if NET45
+
         /// <summary>
         /// Get sql grography object from well known text
         /// </summary>
@@ -40,6 +42,16 @@ namespace EntityFramework.BulkInsert.Providers
         /// <param name="srid">The identifier associated with the coordinate system.</param>
         /// <returns></returns>
         public abstract object GetSqlGeography(string wkt, int srid);
+
+        /// <summary>
+        /// Get sql geometry object from well known text
+        /// </summary>
+        /// <param name="wkt">Well known text representation of the value</param>
+        /// <param name="srid">The identifier associated with the coordinate system.</param>
+        /// <returns></returns>
+        public abstract object GetSqlGeometry(string wkt, int srid);
+
+#endif
 
         /// <summary>
         /// Sets DbContext for bulk insert to use
