@@ -4,6 +4,10 @@ using System.Data.SqlTypes;
 using EntityFramework.BulkInsert.Extensions;
 using EntityFramework.BulkInsert.Helpers;
 
+#if NET45
+using Microsoft.SqlServer.Types;
+#endif
+
 namespace EntityFramework.BulkInsert.Providers
 {
     public class EfSqlBulkInsertProviderWithMappedDataReader : ProviderBase<SqlConnection, SqlTransaction>

@@ -32,6 +32,11 @@ namespace EntityFramework.BulkInsert.SqlServerCe
             throw new NotImplementedException();
         }
 
+        public override object GetSqlGeometry(string wkt, int srid)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Run<T>(IEnumerable<T> entities)
         {
             using (var dbConnection = GetConnection())
@@ -104,7 +109,7 @@ namespace EntityFramework.BulkInsert.SqlServerCe
                 var colInfos = ColInfos(connection, reader)
                     .Values
                     .Where(x => !x.IsIdentity || keepIdentity)
-                    .ToArray();
+                    .ToArray(); 
 
                 using (var cmd = CreateCommand(reader.TableName, connection, transaction))
                 {
