@@ -1,2 +1,3 @@
-# efbulkinsert
-Entity Framework Bulk Insert
+# Entity Framework Bulk Insert
+
+Fork of the EntityFramework.BulkInsert project from https://efbulkinsert.codeplex.com/
