@@ -162,7 +162,7 @@ namespace EntityFramework.BulkInsert.Helpers
             var read = _enumerator.MoveNext();
             if (read)
             {
-                var t = _enumerator.Current.GetType();
+                var t = System.Data.Entity.Core.Objects.ObjectContext.GetObjectType(_enumerator.Current.GetType());
                 try
                 {
                     _currentEntityTypeSelectors = Selectors[t];
