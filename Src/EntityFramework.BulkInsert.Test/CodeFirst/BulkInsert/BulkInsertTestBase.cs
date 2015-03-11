@@ -11,7 +11,6 @@ using System.Data.Spatial;
 #endif
 #endif
 
-using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
 using System.Xml.Serialization;

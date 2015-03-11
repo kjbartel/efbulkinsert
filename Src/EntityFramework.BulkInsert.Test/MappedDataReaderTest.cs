@@ -58,6 +58,11 @@ namespace EntityFramework.BulkInsert.Test
                 Context = context;
                 return this;
             }
+
+            public object GetSqlGeometry(string wkt, int srid)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private IEfBulkInsertProvider GetDummyProvider(DbContext context)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using EntityFramework.BulkInsert.Exceptions;
 #if NET45
 #if EF6
